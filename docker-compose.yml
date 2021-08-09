@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   master1:
-    image: cloudbees/cloudbees-core-cm:latest
+    image: cloudbees/cloudbees-core-cm:2.289.3.2
     container_name: cb-master1
     user: jenkins
     ports:
@@ -10,14 +10,18 @@ services:
     links:
       - cjoc:cjoc.cb-local.de
       - agent1:agent1.cb-local.de
+   # environment:
+   #   JAVA_OPTS: "-Dcore.casc.config.bundle=/var/core-casc-custom-bundle/"
+      #JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/core-casc-bundle"
     volumes:
-      - ./jenkins-data:/var/jenkins_home
+    #  - ./shared-volume/core-casc-custom-bundle/custom:/var/core-casc-custom-bundle/
+      - ./jenkins-home-master1:/var/jenkins_home
 #   - /home/andi/.m2:/var/jenkins_home/.m2
 #      - ssh:/var/jenkins_home/.ssh
 
 
   cjoc:
-    image: cloudbees/cloudbees-core-oc:latest
+    image: cloudbees/cloudbees-core-oc:2.289.3.2
     container_name: cjoc
     user: root
     ports:
@@ -26,6 +30,8 @@ services:
     links:
      # - master1:master.cb-local.de
       - agent1:agent1.cb-local.de
+    environment:
+      - JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/oc-casc-bundle/"
     volumes:
       - ./jenkins-data-oc:/var/jenkins_home
 #   - /home/andi/.m2:/var/jenkins_home/.m2
@@ -35,7 +41,7 @@ services:
   agent1:
     image: jenkins/ssh-slave:latest
     container_name: agent1
-#    user: root
+##    user: root
     ports:
       - "2222:22"
     environment:
@@ -62,13 +68,13 @@ services:
 
 ##Ubuntu GUI
 #docker run -p 6080:80 -v /dev/shm:/dev/shm dorowu/ubuntu-desktop-lxde-vnc
-#  browser:
-#    image: dorowu/ubuntu-desktop-lxde-vnc
-#    container_name: ubuntu
-#    user: root
-#    ports:
-#      - "6080:80"
-#    links:
-#      - master1:master1
-#      - cjoc:cjoc
-#      - agent1:agent1
+  browser:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    container_name: ubuntu
+    user: root
+    ports:
+      - "6080:80"
+    links:
+      - master1:master1
+      - cjoc:cjoc
+      - agent1:agent1
