@@ -1,12 +1,6 @@
 cb-ci on traditinionel with docker-compose with nginx reverse proxy
 
-Rquires either DNS CNAME RECORDS for cjoc and masters 
-(f.e cjoc.yourdomain.com and  master.yourdomain.com) 
-OR  an emtry in 
-```
-/etc/hosts 
-127.0.0.1  cjoc.cb-local.de master.cb-local.de;
-```
+
 
 .Start Container
 ```
@@ -21,4 +15,12 @@ open http://127.0.0.1:6080
 Access from docker host system
 ```
 open http://cjoc.cb-local.de
+```
+
+DNS CNAME RECORDS for cjoc and masters 
+(f.e cjoc.yourdomain.com and  master.yourdomain.com) 
+OR  an emtry in 
+```
+/etc/hosts 
+127.0.0.1  cjoc.cb-local.de master.cb-local.de;
 ```
