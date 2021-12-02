@@ -30,8 +30,8 @@ services:
     links:
      # - master1:master.cb-local.de
       - agent1:agent1.cb-local.de
-    environment:
-      - JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/oc-casc-bundle/"
+   # environment:
+    #  - JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/oc-casc-bundle/"
     volumes:
       - ./jenkins-data-oc:/var/jenkins_home
 #   - /home/andi/.m2:/var/jenkins_home/.m2
