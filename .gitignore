@@ -1,9 +1,8 @@
-/.idea/
-/jenkins-data/
-/nohup.out
-/do.txt
-/jenkins-data-oc/
-/lzlabs.txt
-/startOC.sh
-/start.sh
-/createNetwork.sh
+.idea/
+data
+casc/controller-pf/*
+haproxy-config/gen-haproxy-ssl.cfg
+haproxy-config/gen-haproxy.cfg
+ssl/*
+.env
+

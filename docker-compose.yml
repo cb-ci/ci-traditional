@@ -1,80 +1,142 @@
-version: "3.8"
 services:
-  master1:
-    image: cloudbees/cloudbees-core-cm:2.289.3.2
-    container_name: cb-master1
-    user: jenkins
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    links:
-      - cjoc:cjoc.cb-local.de
-      - agent1:agent1.cb-local.de
-   # environment:
-   #   JAVA_OPTS: "-Dcore.casc.config.bundle=/var/core-casc-custom-bundle/"
-      #JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/core-casc-bundle"
-    volumes:
-    #  - ./shared-volume/core-casc-custom-bundle/custom:/var/core-casc-custom-bundle/
-      - ./jenkins-home-master1:/var/jenkins_home
-#   - /home/andi/.m2:/var/jenkins_home/.m2
-#      - ssh:/var/jenkins_home/.ssh
-
-
-  cjoc:
-    image: cloudbees/cloudbees-core-oc:2.289.3.2
-    container_name: cjoc
-    user: root
-    ports:
-      - "8081:8080"
-      - "50002:50000"
-    links:
-     # - master1:master.cb-local.de
-      - agent1:agent1.cb-local.de
-   # environment:
-    #  - JAVA_OPTS: "-Dcore.casc.config.bundle=/var/jenkins_home/oc-casc-bundle/"
-    volumes:
-      - ./jenkins-data-oc:/var/jenkins_home
-#   - /home/andi/.m2:/var/jenkins_home/.m2
-#      - ssh:/var/jenkins_home/.ssh
-
-
-  agent1:
-    image: jenkins/ssh-slave:latest
-    container_name: agent1
-##    user: root
-    ports:
-      - "2222:22"
+  operations-center:
+    image: ${DOCKER_IMAGE_CJOC}
+    platform: linux/amd64
+    extra_hosts:
+      - "${CJOC_URL}:${HAPROXY_IP}"
+      - "${CONTROLLER_URL}:${HAPROXY_IP}"
+    healthcheck:
+      test: curl -k --fail ${HTTP_PROTOCOL}://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 50
     environment:
-      JENKINS_SLAVE_SSH_PUBKEY: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0smsRx4AD0Aek3TKp4D2G/SjS6Bm3SHnI0boBPGLXfgMDP7jaNWjbgEzS79hN6HcFXZS+u4zMotN7gA5f26Hl/H3XPEcqtyodewlIC0JB1QFMbAi3k7Pr0irh8L0bmFgORb1YHV8XwZcrznXNPdSfzKonEV7zuXORK1n9VWmQs6WpL4Ay6440u6iXXvbcSav1l1uAvJ4lMfdq/KOWTyZ4RIHejgqsp88l58ZAtCGbDXr81gbjCbLTuGxWBV5N2wgMRJQ/uoqvXZu+rkHtwf861WvQ3jT1obiwXwljLz46WlWism3r+ZV/2Kmz1VYfc3dl/p2izeDROUpHiWIFrIAcsfr7Wk6AP8Hdg533geFLS72LnMrzHX1zYL1AEmH2fy3hpWCoM8X1E81sjCXoYZLnSnhpquUWDVTZvYzkzBmbVBR9xb1Eg+wRNz7DVkDz40d+lHEbutWPjdT1BSYF6eJJhe+rUGhYD70Obmtho5gEbJ2rMPLkTPM0/+u+OerzeIpyMOdMWKoRX7RXT6G3yFTYv07ax5dnfCPaqopV3n5SVlM+3czL6/Rb8U2C/pd70bUprpYXfAaH7+ftrssT1F3pBof6e/mVjWZrZcJK8LyvFuFGkb8gZ6IVxn2VE5dkiQUjaJpJjQ/132qB9i12UZ1d853RCUmdzJBvbgmQPngVgw== acaternberg@cloudbees.com"
-      JAVA_HOME: "/usr/local/openjdk-8/"
-
-
-#docker run --name mynginx2 --mount type=bind,source=/var/www,target=/usr/share/nginx/html,readonly --mount source=/var/nginx/conf,target=/etc/nginx/conf,readonly -p 80:80 -d nginx
-  cb-local:
-    image: nginx:latest
-    container_name: cb_nginx
+      - JAVA_OPTS=${CJOC_JAVA_OPTS}
+      - JENKINS_OPTS=${CJOC_JENKINS_OPTS}
+      - CJOC_LOGIN_PW=${CJOC_LOGIN_PW}
+      - CJOC_LOGIN_USER=${CJOC_LOGIN_USER}
+      - CJOC_URL=${HTTP_PROTOCOL}://${CJOC_URL}
+      - CJOC_CASC_DEFAULT_BUNDLE=${CJOC_CASC_DEFAULT_BUNDLE}
+    container_name: operations-center
     volumes:
-      - ./nginx-config/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx-config/etc/nginx/conf.d/jenkins.conf:/etc/nginx/conf.d/jenkins.conf
-#      - ./nginx-config/cert/star_xx_com.pem:/etc/nginx/cert/star_xx_com.pem
-#      - ./nginx-config/cert/star_xx_com.key:/etc/nginx/cert/star_xx_com.key
-#      - ./nginx-config/cert/star_xx_com.crt:/etc/nginx/cert/star_xx_com.crt
-    ports:
-      - 80:80
-#      - 443:443
-    links:
-        - master1:master.cb-local.de
-        - cjoc:cjoc.cb-local.de
+      - ${CJOC_PERSISTENCE}:/var/jenkins_home
+      - ${CJOC_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}
+      - ./ssl/cacerts:/tmp/cacerts
+      # - ./ssl/jenkins.jks:/tmp/jenkins.jks
+      # - ./ssl/jenkins.p12:/tmp/jenkins.p12
+      # - ./ssl/cacerts:/tmp/cacerts
+    networks:
+      demo-network:
+        ipv4_address: ${CJOC_IP}
+  # Sidecar bunlde-link.yaml init doesent work yet, oc  hostname can not be resolved?
+  #  init-controllers:
+  #    image: curlimages/curl
+  #    extra_hosts:
+  #      - "${CJOC_URL}:${HAPROXY_IP}"
+  #    command: ["/bin/sh", "-c", "set -x && curl -v -k -L --user '${CJOC_LOGIN_USER}:${CJOC_LOGIN_PW}' -XGET -o /var/jenkins_home/bundle-link.yaml '${HTTP_PROTOCOL}://operations-center:${HTTP_PORT}/config-bundle-download-link?id=ha' && cat /var/jenkins_home/bundle-link.yaml"]
+  #    container_name: init-controllers
+  #    healthcheck:
+  #      test: test -f /var/jenkins_home/bundle-link.yaml
+  #      interval: 5s
+  #      timeout: 3s
+  #      retries: 5
+  #      start_period: 2s
+  #    depends_on:
+  #      operations-center:
+  #        condition: service_healthy
+  #    volumes:
+  #      - ${CONTROLLER_PERSISTENCE}:/var/jenkins_home
+  #    networks:
+  #      demo-network:
+  #        ipv4_address: ${INIT_CLIENT_IP}
 
-##Ubuntu GUI
-#docker run -p 6080:80 -v /dev/shm:/dev/shm dorowu/ubuntu-desktop-lxde-vnc
-  browser:
-    image: dorowu/ubuntu-desktop-lxde-vnc
-    container_name: ubuntu
-    user: root
+  controller:
+    image: ${DOCKER_IMAGE_CONTROLLER}
+    platform: linux/amd64
+    extra_hosts:
+      - "${CJOC_URL}:${HAPROXY_IP}"
+      - "${CONTROLLER_URL}:${HAPROXY_IP}"
+    depends_on:
+      operations-center:
+        condition: service_healthy
+    healthcheck:
+      test: curl -k --fail ${HTTP_PROTOCOL}://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 150
+    environment:
+      - JAVA_OPTS=${CONTROLLER_JAVA_OPTS}
+      - JENKINS_OPTS=${CONTROLLER_JENKINS_OPTS}
+      - CONTROLLER_URL=${HTTP_PROTOCOL}://${CONTROLLER_URL}
+    #    depends_on:
+    #      init-controllers:
+    #        condition: service_healthy
+    # entrypoint: ["sh", "-c", "while [ ! -f /var/jenkins_home/bundle-link.yaml ]; do echo 'wait for bundle-link.yaml' && sleep 1; done;"]
+
+    container_name: controller
+
+    volumes:
+      - ${CONTROLLER_PERSISTENCE}:/var/jenkins_home
+      - ${CONTROLLER_CACHE}:/var/cache
+      - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}
+      - ./ssl/cacerts:/tmp/cacerts
+      # - ./ssl/jenkins.jks:/tmp/jenkins.jks
+      # - ./ssl/jenkins.p12:/tmp/jenkins.p12
+
+
+    networks:
+      demo-network:
+        ipv4_address: ${CONTROLLER_IP}
+  haproxy:
+    image: ${DOCKER_IMAGE_HAPROXY}
+    volumes:
+      - ${HA_PROXY_CONFIG}:/usr/local/etc/haproxy/haproxy.cfg
+      - ${LOCAL_VOLUME}/haproxy:/etc/ssl/
+      - ./ssl/jenkins.pem:/etc/ssl/certs/jenkins.pem
     ports:
-      - "6080:80"
-    links:
-      - master1:master1
-      - cjoc:cjoc
-      - agent1:agent1
+      - "${HA_PROXY_BIND_PORT}:${HA_PROXY_BIND_PORT}"
+    container_name: haproxy
+    networks:
+      demo-network:
+        ipv4_address: ${HAPROXY_IP}
+    # depends_on:
+    #   controller:
+    #     condition: service_healthy
+    extra_hosts:
+      - "${CJOC_URL}:${CJOC_IP}"
+      - "${CONTROLLER_URL}:${CONTROLLER_IP}"
+  # browser:
+  #   image: ${DOCKER_IMAGE_BROWSER_BOX}
+  #   container_name: webtop
+  #   security_opt:
+  #     - seccomp:unconfined #optional
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Etc/UTC
+  #     - SUBFOLDER=/ #optional
+  #     - TITLE=Webtop #optional
+  #   volumes:
+  #     - ${BROWSER_PERSISTENCE}:/config
+  #   ports:
+  #     - 3000:3000
+  #     - 3001:3001
+  #   #devices:
+  #   #  - /dev/dri:/dev/dri #optional
+  #   shm_size: "2gb" #optional
+  #   restart: unless-stopped
+  #   extra_hosts:
+  #     - "${CJOC_URL}:${HAPROXY_IP}"
+  #     - "${CONTROLLER_URL}:${HAPROXY_IP}"
+  #   networks:
+  #     demo-network:
+  #       ipv4_address: ${BROWSER_IP}
+
+networks:
+  demo-network:
+    driver: bridge
+    #driver_opts:
+    #  com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+    ipam:
+      config:
+        - subnet: ${IP_PREFIX}.0.0/24

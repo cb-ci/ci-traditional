@@ -1,0 +1,60 @@
+jenkins:
+  authorizationStrategy: "cloudBeesRoleBasedAccessControl"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+  numExecutors: 1
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "admin"
+        password: ${CJOC_LOGIN_PW}
+        name: ${CJOC_LOGIN_USER}
+        properties:
+        - "consoleUrlProvider"
+        - "blueSteelRedirectOptOutProperty"
+        - "myView"
+        - preferredProvider:
+            providerId: "default"
+        - "timezone"
+        - "experimentalFlags"
+        - "apiToken"
+        - mailer:
+            emailAddress: "user@example.com"
+        - "apiToken"
+  slaveAgentPort: -1
+cloudBeesCasCServer:
+   defaultBundle: "${CJOC_CASC_DEFAULT_BUNDLE}"
+   disableRemoteValidation: false
+   visibility: true
+security:
+  securitySettingsEnforcement:
+    global:
+      realmAndAuthorization:
+        canCustomMapping: false
+        canOverride: false
+#        defaultMappingFactory: "restrictedEquivalentRAMF"
+#license:
+#  certificate: |
+#    ${readFile:${JENKINS_HOME}/cb-wildcard-license.cert}
+#  key: |
+#    ${readFile:${JENKINS_HOME}/cb-wildcard-license.key}
+unclassified:
+  bundleUpdateTiming:
+    automaticReload: true
+    automaticRestart: true
+    rejectWarnings: false
+    reloadAlwaysOnRestart: false
+    skipNewVersions: false
+  cascItemsConfiguration:
+    variableInterpolationEnabledForAdmin: false
+    variableInterpolationEnabledForNonAdmin: false
+  headerLabel:
+    text: "Managed by CasC"
+  location:
+    adminAddress: "Set me up <nobody@nowhere>"
+    url: ${CJOC_URL}
+  operationsCenterSharedConfiguration:
+    enabled: true
