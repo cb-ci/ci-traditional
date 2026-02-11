@@ -91,6 +91,18 @@ To make the certificate trusted in your browser:
 
 ![keychainaccess-trust.png](images/keychainaccess-trust.png)
 
+### Webtop (Browser-based Desktop)
+
+The environment includes a **Webtop** container, which provides a full Linux desktop environment in your browser.
+
+- **URL:** [http://localhost:3000](http://localhost:3000)
+- **User:** `abc` / `abc` (or commonly no password depending on configuration)
+
+**When to use it:**
+
+- **Network Debugging:** Since it runs inside the Docker network, use it to debug connectivity issues between containers (e.g., verifying `cjoc.local` resolves correctly from inside the cluster).
+- **Internal Access Check:** If you cannot access the controller or CJOC from your host machine, try accessing them via Webtop (`firefox https://cjoc.local`) to isolate if the issue is with the container network or your host configuration.
+
 ---
 
 ## Configuration
