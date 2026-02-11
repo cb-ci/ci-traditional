@@ -1,0 +1,25 @@
+jenkins:
+  authorizationStrategy: "cloudBeesRoleBasedAccessControl"
+  clouds:
+    - "operationsCenterAgentProvisioningService"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+  numExecutors: 1
+security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "noHostKeyVerificationStrategy"
+unclassified:
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - "jobBuildDiscarder"
+      - simpleBuildDiscarder:
+          discarder:
+            logRotator:
+              artifactNumToKeepStr: "4"
+              numToKeepStr: "4"
+  headerLabel:
+    text: "Managed by CasC"
+  location:
+    adminAddress: "not configured <nobody@nowhere>"
+    url: ${CONTROLLER_URL}

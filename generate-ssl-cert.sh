@@ -49,8 +49,8 @@ echo "Generating self-signed SSL certificate..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout "${KEY_FILE}" \
     -out "${CERT_FILE}" \
-    -subj "/C=US/ST=State/L=City/O=Organization/OU=DevOps/CN=localhost" \
-    -addext "subjectAltName=DNS.1:localhost,DNS.2:nginx,DNS.3:jenexus,IP:127.0.0.1,IP:172.20.0.11"
+    -subj "/C=US/ST=State/L=City/O=Organization/OU=DevOps/CN=${CJOC_URL}" \
+    -addext "subjectAltName=DNS.1:${CJOC_URL},DNS.2:${CONTROLLER_URL},DNS.3:localhost:localhost,IP:127.0.0.1,IP:${CONTROLLER_IP},IP:${CJOC_IP}"
 
 # Set appropriate permissions
 chmod 600 "${KEY_FILE}"
@@ -76,7 +76,7 @@ keytool -delete -alias jenkins -keystore jenkins.jks -storepass $STORE_PW -keypa
 ## Convert PEM and add it to the jenkins.jks (Java KeyStore)
 openssl pkcs12 -export -in ${CERT_FILE} -inkey ${KEY_FILE} -out jenkins.p12 -name jenkins -CAfile ${CERT_FILE} -caname root -passout pass:$STORE_PW
 
-# enter a password when prompted, for example 'changeit'
+# Import the PKCS12 file into a new JKS  jenkins.jks 
 keytool -importkeystore -destkeystore jenkins.jks -srckeystore jenkins.p12 -srcstoretype PKCS12 -storepass $STORE_PW -keypass $STORE_PW -alias jenkins
 # enter the same password when prompted, for example 'changeit'
 

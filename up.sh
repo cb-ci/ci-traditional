@@ -23,4 +23,4 @@ docker-compose  up -d --build
 
 #open http://127.0.0.1:6080
 
-docker-compose logs -f 
+#docker-compose logs -f 

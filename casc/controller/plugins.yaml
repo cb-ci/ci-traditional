@@ -1,0 +1,12 @@
+plugins:
+- id: cloudbees-casc-client
+- id: cloudbees-casc-items-api
+- id: cloudbees-casc-items-commons
+- id: cloudbees-casc-items-controller
+- id: cloudbees-casc-shared
+- id: git
+- id: git-client
+- id: git-server
+- id: github
+- id: github-api
+- id: github-branch-source

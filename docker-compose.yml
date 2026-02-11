@@ -6,7 +6,7 @@ services:
       - "${CJOC_URL}:${HAPROXY_IP}"
       - "${CONTROLLER_URL}:${HAPROXY_IP}"
     healthcheck:
-      test: curl -k --fail ${HTTP_PROTOCOL}://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
+      test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 3s
       timeout: 3s
       retries: 50
@@ -17,38 +17,76 @@ services:
       - CJOC_LOGIN_USER=${CJOC_LOGIN_USER}
       - CJOC_URL=${HTTP_PROTOCOL}://${CJOC_URL}
       - CJOC_CASC_DEFAULT_BUNDLE=${CJOC_CASC_DEFAULT_BUNDLE}
+      - CONTROLLER_BUNDLE_NAME=${CONTROLLER_BUNDLE_NAME}
     container_name: operations-center
     volumes:
-      - ${CJOC_PERSISTENCE}:/var/jenkins_home
-      - ${CJOC_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}
+      - ${CJOC_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
+      - ${CJOC_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/cjoc
+      - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/${CONTROLLER_BUNDLE_NAME}
       - ./ssl/cacerts:/tmp/cacerts
-      # - ./ssl/jenkins.jks:/tmp/jenkins.jks
-      # - ./ssl/jenkins.p12:/tmp/jenkins.p12
-      # - ./ssl/cacerts:/tmp/cacerts
+      - ./jenkins_init.groovy.d/init_user.groovy:${JENKINS_HOME_CONTAINER}/init.groovy.d/init_user.groovy
     networks:
       demo-network:
         ipv4_address: ${CJOC_IP}
   # Sidecar bunlde-link.yaml init doesent work yet, oc  hostname can not be resolved?
-  #  init-controllers:
-  #    image: curlimages/curl
-  #    extra_hosts:
-  #      - "${CJOC_URL}:${HAPROXY_IP}"
-  #    command: ["/bin/sh", "-c", "set -x && curl -v -k -L --user '${CJOC_LOGIN_USER}:${CJOC_LOGIN_PW}' -XGET -o /var/jenkins_home/bundle-link.yaml '${HTTP_PROTOCOL}://operations-center:${HTTP_PORT}/config-bundle-download-link?id=ha' && cat /var/jenkins_home/bundle-link.yaml"]
-  #    container_name: init-controllers
-  #    healthcheck:
-  #      test: test -f /var/jenkins_home/bundle-link.yaml
-  #      interval: 5s
-  #      timeout: 3s
-  #      retries: 5
-  #      start_period: 2s
-  #    depends_on:
-  #      operations-center:
-  #        condition: service_healthy
-  #    volumes:
-  #      - ${CONTROLLER_PERSISTENCE}:/var/jenkins_home
-  #    networks:
-  #      demo-network:
-  #        ipv4_address: ${INIT_CLIENT_IP}
+  init-controller:
+    image: curlimages/curl
+    extra_hosts:
+      - "${CJOC_URL}:${HAPROXY_IP}"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        set -x
+        if [ ! -f ${SECRET_PATH_CJOC_TOKEN} ]; then
+            echo "Error: Token file ${SECRET_PATH_CJOC_TOKEN} not found."
+            exit 1
+        fi
+        TOKEN="$$(cat ${SECRET_PATH_CJOC_TOKEN})"
+        echo "Fetching bundle link..."
+
+        # Capture HTTP status code, allow 4xx/5xx to pass curl so we can check code
+        # -s: Silent (no progress), -S: Show error (connection errors), -k: Insecure, -w: Output status code, -L: Follow redirects
+        HTTP_STATUS=$$(curl -sSL -k -w "%{http_code}" \
+            --user "${CJOC_LOGIN_USER}:$${TOKEN}" \
+            -o "${JENKINS_HOME_CONTAINER}/bundle-link.yaml" \
+            "http://operations-center:${HTTP_PORT}/config-bundle-download-link?id=${CONTROLLER_BUNDLE_NAME}")
+
+        echo "HTTP Status: $$HTTP_STATUS"
+
+        # Check for allowed status codes: 200, 201, 302
+        case "$$HTTP_STATUS" in
+            200|201|302)
+                echo "Success: Bundle link downloaded."
+                sed -i 's#https://cjoc.local#http://operations-center:8080#g' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
+                cat ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
+                ;;
+            *)
+                echo "Error: Failed to fetch bundle link. HTTP Status: $$HTTP_STATUS"
+                if [ -s "${JENKINS_HOME_CONTAINER}/bundle-link.yaml" ]; then
+                    echo "Response content:"
+                    cat "${JENKINS_HOME_CONTAINER}/bundle-link.yaml"
+                fi
+                exit 1
+                ;;
+        esac
+    container_name: init-controller
+    healthcheck:
+      test: test -f ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+    depends_on:
+      operations-center:
+        condition: service_healthy
+    volumes:
+      - ${CONTROLLER_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
+      - ${CJOC_PERSISTENCE}/cjoc_token.txt:${SECRET_PATH_CJOC_TOKEN}
+    networks:
+      demo-network:
+        ipv4_address: ${INIT_CLIENT_IP}
 
   controller:
     image: ${DOCKER_IMAGE_CONTROLLER}
@@ -56,11 +94,11 @@ services:
     extra_hosts:
       - "${CJOC_URL}:${HAPROXY_IP}"
       - "${CONTROLLER_URL}:${HAPROXY_IP}"
-    depends_on:
-      operations-center:
-        condition: service_healthy
+    # depends_on:
+    #   init-controller:
+    #     condition: service_healthy  
     healthcheck:
-      test: curl -k --fail ${HTTP_PROTOCOL}://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
+      test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 3s
       timeout: 3s
       retries: 150
@@ -68,22 +106,19 @@ services:
       - JAVA_OPTS=${CONTROLLER_JAVA_OPTS}
       - JENKINS_OPTS=${CONTROLLER_JENKINS_OPTS}
       - CONTROLLER_URL=${HTTP_PROTOCOL}://${CONTROLLER_URL}
-    #    depends_on:
-    #      init-controllers:
-    #        condition: service_healthy
-    # entrypoint: ["sh", "-c", "while [ ! -f /var/jenkins_home/bundle-link.yaml ]; do echo 'wait for bundle-link.yaml' && sleep 1; done;"]
+    depends_on:
+      init-controller:
+        condition: service_completed_successfully
+        required: true
+    # entrypoint: ["sh", "-c", "while [ ! -f ${JENKINS_HOME_CONTAINER}/bundle-link.yaml ]; do echo 'wait for bundle-link.yaml' && sleep 1; done;"]
 
     container_name: controller
 
     volumes:
-      - ${CONTROLLER_PERSISTENCE}:/var/jenkins_home
+      - ${CONTROLLER_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
       - ${CONTROLLER_CACHE}:/var/cache
       - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}
       - ./ssl/cacerts:/tmp/cacerts
-      # - ./ssl/jenkins.jks:/tmp/jenkins.jks
-      # - ./ssl/jenkins.p12:/tmp/jenkins.p12
-
-
     networks:
       demo-network:
         ipv4_address: ${CONTROLLER_IP}
@@ -99,9 +134,9 @@ services:
     networks:
       demo-network:
         ipv4_address: ${HAPROXY_IP}
-    # depends_on:
-    #   controller:
-    #     condition: service_healthy
+    depends_on:
+      controller:
+        condition: service_healthy
     extra_hosts:
       - "${CJOC_URL}:${CJOC_IP}"
       - "${CONTROLLER_URL}:${CONTROLLER_IP}"

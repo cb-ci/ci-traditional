@@ -26,9 +26,9 @@ jenkins:
         - "apiToken"
   slaveAgentPort: -1
 cloudBeesCasCServer:
-   defaultBundle: "${CJOC_CASC_DEFAULT_BUNDLE}"
-   disableRemoteValidation: false
-   visibility: true
+  defaultBundle: "local/controller"
+  disableRemoteValidation: false
+  visibility: true
 security:
   securitySettingsEnforcement:
     global:
@@ -49,8 +49,8 @@ unclassified:
     reloadAlwaysOnRestart: false
     skipNewVersions: false
   cascItemsConfiguration:
-    variableInterpolationEnabledForAdmin: false
-    variableInterpolationEnabledForNonAdmin: false
+    variableInterpolationEnabledForAdmin: true
+    variableInterpolationEnabledForNonAdmin: true
   headerLabel:
     text: "Managed by CasC"
   location:

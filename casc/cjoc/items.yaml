@@ -8,7 +8,7 @@ items:
   displayName: controller
   properties:
   - configurationAsCode:
-      bundle: ${CJOC_CASC_BUNDLE_PATH_CONTAINER}
+      bundle: controller/controller
   - sharedHeaderLabelOptIn:
       optIn: true
   - healthReporting:
