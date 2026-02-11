@@ -11,7 +11,7 @@ else
 fi
 
 if [[ ! -f "./license.crt" || ! -f "./license.key" ]]; then
-  echo "CloudBees CI license files not found. Create them or copy them to the current directory"
+  echo "CloudBees CI license files './license.crt' './license.key' not found. Create them or copy them to the current directory"
   exit 1
 fi
 
