@@ -31,8 +31,8 @@ graph TD
         HAProxy -->|Host: controller.local| Controller
     end    
     
-    Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
-    Init -- "2. Write CasC bundle-link.yaml" --> Controller
+    Init -- "1. Fetch CasC  bundle-link.yaml from CJOC" --> CJOC
+    Init -- "2. Write CasC bundle-link.yaml to Controller" --> Controller
     Controller -- "3. Connect to CJOC https://cjoc.local" --> HAProxy -- "4. Connect to CJOC http://operations-center:8080" --> CJOC
     Controller -- "5. Load Casc Bundle from CJOC http://operations-center:8080" --> CJOC
 
