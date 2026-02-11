@@ -12,27 +12,28 @@ It also utilizes an **Init-Controller** pattern (simulating a Kubernetes init co
 ```mermaid
 graph TD
     User((User / Browser))
-    
-    subgraph "Docker Network (172.47.0.0/24)"
+    subgraph "Docker Compose Network"
         HAProxy[("HAProxy
         (SSL Termination)
         Port: 443")]
         
-        CJOC["Operations Center
-        (cjoc.local)"]
+        subgraph "CloudBees CI"
+            CJOC["Operations Center
+            (cjoc.local)"]
+            Controller["controller
+            (controller.local)"]
+        end
         
         Init["init-controller
         (curl sidecar)"]
-        Controller["controller
-        (controller.local)"]
        
         HAProxy -->|Host: cjoc.local| CJOC
         HAProxy -->|Host: controller.local| Controller
-        
-        Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
-        Init -- "2. Write CasC bundle-link.yaml" --> Controller
-        Controller -- "3. Connect to CJOC (HTTPS)" --> HAProxy -- "4. Connect to CJOC (HTTPS)" --> CJOC
-    end
+    end    
+    
+    Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
+    Init -- "2. Write CasC bundle-link.yaml" --> Controller
+    Controller -- "3. Connect to CJOC (HTTPS)" --> HAProxy -- "4. Connect to CJOC (HTTPS)" --> CJOC
     
     User -- "5. https://cjoc.local" --> HAProxy -- "6. http://operations-center:8080" --> CJOC
     User -- "7. https://controller.local" --> HAProxy -- "8. http://controller:8080" --> Controller
