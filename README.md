@@ -22,9 +22,9 @@ graph TD
         (cjoc.local)"]
         
         subgraph "Controller Logic"
-            Init["Init-Controller
+            Init["init-controller
             (curl sidecar)"]
-            Controller["Managed Controller
+            Controller["controller
             (controller.local)"]
         end
         
@@ -33,11 +33,11 @@ graph TD
         
         Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
         Init -- "2. Write CasC bundle-link.yaml" --> Controller
-        Controller -- "3. Connect (HTTP)" --> HAProxy --> CJOC
+        Controller -- "3. Connect to CJOC (HTTPS)" --> HAProxy -- "4. Connect to CJOC (HTTPS)" --> CJOC
     end
     
-    User -->|https://cjoc.local| HAProxy
-    User -->|https://controller.local| HAProxy
+    User -- "5. https://cjoc.local" --> HAProxy -- "6. http://operations-center:8080" --> CJOC
+    User -- "7. https://controller.local" --> HAProxy -- "8. http://controller:8080" --> Controller
 ```
 
 ## Quickstart
