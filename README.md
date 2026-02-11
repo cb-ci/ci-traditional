@@ -3,6 +3,11 @@
 This project provides a Docker Compose setup for CloudBees CI (Traditional) using HAProxy as a reverse proxy/load balancer.
 The setup was tested with CloudBees CI version 2.528.3.35200
 
+See also:
+
+- <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller>
+- <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/add-bundle>
+
 ## Architecture
 
 The setup includes an HAProxy instance that routes traffic based on the Host header (`cjoc.local` vs `controller.local`) to the respective backend containers.
