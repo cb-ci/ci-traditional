@@ -21,13 +21,11 @@ graph TD
         CJOC["Operations Center
         (cjoc.local)"]
         
-        subgraph "Controller Logic"
-            Init["init-controller
-            (curl sidecar)"]
-            Controller["controller
-            (controller.local)"]
-        end
-        
+        Init["init-controller
+        (curl sidecar)"]
+        Controller["controller
+        (controller.local)"]
+       
         HAProxy -->|Host: cjoc.local| CJOC
         HAProxy -->|Host: controller.local| Controller
         
