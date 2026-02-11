@@ -17,7 +17,7 @@ fi
 
 
 
-if [[ ! -f "./ssl/server.crt" || ! -f "./ssl/server.key" ]]; then
+if [[ ! -f "./ssl/server.crt" || ! -f "./ssl/server.key" || ! -f "./ssl/jenkins.pem" || ! -f "./ssl/cacerts" ]]; then
   ./generate-ssl-cert.sh
 else
   echo "SSL certificates already exist. Run 'rm -Rf ssl/*' to recreate them"
