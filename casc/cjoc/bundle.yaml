@@ -4,9 +4,9 @@ description: "Cjoc bundle descriptor"
 version: "1"
 jcasc:
   - "jenkins.yaml"
-# plugins:
-#   - "plugins.yaml"
-#rbac:
-#  - "rbac.yaml"
+plugins:
+  - "plugins.yaml"
+rbac:
+  - "rbac.yaml"
 items:
   - "items.yaml"
