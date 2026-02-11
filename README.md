@@ -105,19 +105,6 @@ The environment includes a **Webtop** container, which provides a full Linux des
 
 ---
 
-## Configuration
-
-The environment is configured via the `.env` file. You can create one by copying the template (if available) or ensuring the following key variables are set:
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `DOCKER_IMAGE_CJOC` | Docker image for Operations Center | `cloudbees/cloudbees-core-oc:latest` |
-| `DOCKER_IMAGE_CONTROLLER` | Docker image for Managed Controller | `cloudbees/cloudbees-core-cm:latest` |
-| `CJOC_URL` | Local hostname for Operations Center | `cjoc.local` |
-| `CONTROLLER_URL` | Local hostname for Managed Controller | `controller.local` |
-| `CJOC_LOGIN_USER` | Admin username for CJOC | `admin` |
-| `CJOC_LOGIN_PW` | Admin password for CJOC | `admin` |
-
 ## Troubleshooting
 
 - **Check Logs**:
