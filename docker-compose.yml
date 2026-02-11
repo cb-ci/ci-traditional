@@ -140,33 +140,6 @@ services:
     extra_hosts:
       - "${CJOC_URL}:${CJOC_IP}"
       - "${CONTROLLER_URL}:${CONTROLLER_IP}"
-  # browser:
-  #   image: ${DOCKER_IMAGE_BROWSER_BOX}
-  #   container_name: webtop
-  #   security_opt:
-  #     - seccomp:unconfined #optional
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Etc/UTC
-  #     - SUBFOLDER=/ #optional
-  #     - TITLE=Webtop #optional
-  #   volumes:
-  #     - ${BROWSER_PERSISTENCE}:/config
-  #   ports:
-  #     - 3000:3000
-  #     - 3001:3001
-  #   #devices:
-  #   #  - /dev/dri:/dev/dri #optional
-  #   shm_size: "2gb" #optional
-  #   restart: unless-stopped
-  #   extra_hosts:
-  #     - "${CJOC_URL}:${HAPROXY_IP}"
-  #     - "${CONTROLLER_URL}:${HAPROXY_IP}"
-  #   networks:
-  #     demo-network:
-  #       ipv4_address: ${BROWSER_IP}
-
 networks:
   demo-network:
     driver: bridge

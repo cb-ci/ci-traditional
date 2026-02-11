@@ -10,6 +10,12 @@ CERT_FILE="server.crt"
 KEY_FILE="server.key"
 STORE_PW="changeit"
 
+# Ensure variables are set or have defaults for the -subj flag
+CJOC_URL=${CJOC_URL:-"localhost"}
+CONTROLLER_URL=${CONTROLLER_URL:-"controller.local"}
+CONTROLLER_IP=${CONTROLLER_IP:-"127.0.0.1"}
+CJOC_IP=${CJOC_IP:-"127.0.0.1"}
+
 if [[ -z "${JAVA_HOME}" ]]; then
   echo "JAVA_HOME is not set. Set JAVA_HOME first"
   exit 1
@@ -17,77 +23,57 @@ else
   echo "JAVA_HOME is set to: $JAVA_HOME"
 fi
 
-
-if command -v openssl >/dev/null 2>&1; then
-  echo "OpenSSL is installed."
-else
+if ! command -v openssl >/dev/null 2>&1; then
   echo "OpenSSL is not installed."
   exit 1
 fi
 
+echo "=== SSL Certificate Generation Script (Automated) ==="
 
-
-echo "=== SSL Certificate Generation Script ==="
-
-# Check if certificates already exist
+# 1. Automatic Regeneration: No more read -p prompt
 if [[ -f "${CERT_FILE}" && -f "${KEY_FILE}" ]]; then
-    echo "✓ SSL certificates already exist:"
-    echo "  - ${CERT_FILE}"
-    echo "  - ${KEY_FILE}"
-    echo ""
-    read -p "Do you want to regenerate them? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Skipping certificate generation."
-        exit 0
-    fi
+    echo "✓ SSL certificates exist. Overwriting for automation..."
 fi
 
 echo "Generating self-signed SSL certificate..."
-
-# Generate self-signed certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout "${KEY_FILE}" \
     -out "${CERT_FILE}" \
     -subj "/C=US/ST=State/L=City/O=Organization/OU=DevOps/CN=${CJOC_URL}" \
-    -addext "subjectAltName=DNS.1:${CJOC_URL},DNS.2:${CONTROLLER_URL},DNS.3:localhost:localhost,IP:127.0.0.1,IP:${CONTROLLER_IP},IP:${CJOC_IP}"
+    -addext "subjectAltName=DNS.1:${CJOC_URL},DNS.2:${CONTROLLER_URL},DNS.3:localhost,IP:127.0.0.1,IP:${CONTROLLER_IP},IP:${CJOC_IP}"
 
-# Set appropriate permissions
 chmod 600 "${KEY_FILE}"
 chmod 644 "${CERT_FILE}"
 
-echo ""
-echo "✓ SSL certificate generated successfully:"
-echo "  - Certificate: ${CERT_FILE}"
-echo "  - Private Key: ${KEY_FILE}"
-echo ""
-echo "⚠️  Note: This is a self-signed certificate. Browsers will show security warnings."
-echo "   For production use, replace with a certificate from a trusted CA."
+# Copy cacerts
+cp -f $JAVA_HOME/lib/security/cacerts .
 
-# copy cacerts from JAVA_HOME
-cp -f -v $JAVA_HOME/lib/security/cacerts .
+# 2. Automated Keytool: Using -dname and -noprompt
+# We provide the Distinguished Name (dname) so it doesn't ask for your name/org
+echo "Creating Java KeyStore..."
+keytool -delete -alias jenkins -keystore jenkins.jks -storepass "$STORE_PW" -noprompt || true
 
-## Create a Java KeyStore (JKS) to hold the key, and delete the default jenkins alias
-keytool -genkey -alias jenkins -keystore jenkins.jks -keyalg rsa -storepass $STORE_PW -keypass $STORE_PW
+keytool -genkey -alias jenkins -keystore jenkins.jks \
+    -keyalg rsa -storepass "$STORE_PW" -keypass "$STORE_PW" \
+    -dname "CN=jenkins, OU=DevOps, O=Organization, L=City, S=State, C=US" \
+    -noprompt
 
-# choose blank values, and for question "Is CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown correct?" answer "yes", as we are deleting this one
-keytool -delete -alias jenkins -keystore jenkins.jks -storepass $STORE_PW -keypass $STORE_PW
 
-## Convert PEM and add it to the jenkins.jks (Java KeyStore)
-openssl pkcs12 -export -in ${CERT_FILE} -inkey ${KEY_FILE} -out jenkins.p12 -name jenkins -CAfile ${CERT_FILE} -caname root -passout pass:$STORE_PW
+# 3. PKCS12 Conversion: Passwords handled via -passout and -passin
+openssl pkcs12 -export -in "${CERT_FILE}" -inkey "${KEY_FILE}" \
+    -out jenkins.p12 -name jenkins -CAfile "${CERT_FILE}" -caname root \
+    -passout pass:"$STORE_PW"
 
-# Import the PKCS12 file into a new JKS  jenkins.jks 
-keytool -importkeystore -destkeystore jenkins.jks -srckeystore jenkins.p12 -srcstoretype PKCS12 -storepass $STORE_PW -keypass $STORE_PW -alias jenkins
-# enter the same password when prompted, for example 'changeit'
+# 4. Import Keystore: Added -srcstorepass to prevent password prompt
+keytool -importkeystore -destkeystore jenkins.jks -srckeystore jenkins.p12 \
+    -srcstoretype PKCS12 -storepass "$STORE_PW" -keypass "$STORE_PW" \
+    -srcstorepass "$STORE_PW" -alias jenkins -noprompt
 
-# Now you have a jenkins.jks that can be used for TLS on each replica
+cat "${CERT_FILE}" "${KEY_FILE}" > jenkins.pem
 
-# create pem file, includes private key and certificate
-# PEM  will be referenced by jenkins and by the patched cacerts
-cat ${CERT_FILE} ${KEY_FILE} > jenkins.pem
+# 5. Final Import: -noprompt ensures it doesn't ask "Trust this certificate?"
+keytool -import -noprompt -keystore cacerts -file jenkins.pem \
+    -storepass "$STORE_PW" -alias jenkins
 
-# Add the pem file to the cacerts
-#keytool -delete -noprompt -alias jenkins -keystore cacerts -storepass $STORE_PW
-keytool -import -noprompt -keystore cacerts -file jenkins.pem -storepass $STORE_PW -keypass $STORE_PW -alias jenkins
-
-cd $current_dir
+cd "$current_dir"
+echo "Done."
