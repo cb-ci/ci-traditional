@@ -31,9 +31,9 @@ graph TD
         HAProxy -->|Host: cjoc.local| CJOC
         HAProxy -->|Host: controller.local| Controller
         
-        Init -- "1. Fetch Bundle Link (HTTP)" --> CJOC
-        Init -- "2. Write bundle-link.yaml" --> Controller
-        Controller -- "3. Connect (JNLP/HTTP)" --> CJOC
+        Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
+        Init -- "2. Write CasC bundle-link.yaml" --> Controller
+        Controller -- "3. Connect (HTTP)" --> HAProxy --> CJOC
     end
     
     User -->|https://cjoc.local| HAProxy
