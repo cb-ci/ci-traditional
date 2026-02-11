@@ -1,4 +1,4 @@
-# CloudBees CI Traditional HA Setup with HAProxy
+# CloudBees CI Traditional with HAProxy (SSL Termination)
 
 This project provides a Docker Compose setup for CloudBees CI (Traditional) using HAProxy as a reverse proxy/load balancer.
 
@@ -37,6 +37,20 @@ This script will:
 - **Managed Controller:** [https://controller.local](https://controller.local)
 
 *(Accept the self-signed certificate warnings in your browser)*
+
+### Browser shows SSL issues or side is not secured/Missing SSL Certificate
+
+To accept your local self-signed SSL certifacte in your browser when you access the Operations Center or the Controller, do the following:
+
+To make the certificate trusted in your browser:
+
+- [Add the certificate to your Keychain Access](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac)
+- Import the certificate into MacOs "Keychain Access"
+- Once imported: click the certificate and select  "Always trusted"
+
+![keychainaccess.png](images/keychainaccess.png)
+
+![keychainaccess-trust.png](images/keychainaccess-trust.png)
 
 ---
 
