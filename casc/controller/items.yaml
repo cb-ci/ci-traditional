@@ -3,7 +3,7 @@ removeStrategy:
   items: NONE
 items:
 - kind: pipeline
-  name: hw
+  name: hello-world
   concurrentBuild: true
   definition:
     cpsFlowDefinition:
@@ -20,12 +20,7 @@ items:
               }
           }
         }
-  description: ''
+  description: 'Hello World pipeline'
   disabled: false
-  displayName: hw
-  properties:
-    - gitLabConnection:
-        useAlternativeCredential: false
-        jobCredentialId: ''
-        gitLabConnection: gitlab
+  displayName: hello-world
   resumeBlocked: false
