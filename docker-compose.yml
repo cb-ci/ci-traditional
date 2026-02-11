@@ -15,7 +15,7 @@ services:
       - JENKINS_OPTS=${CJOC_JENKINS_OPTS}
       - CJOC_LOGIN_PW=${CJOC_LOGIN_PW}
       - CJOC_LOGIN_USER=${CJOC_LOGIN_USER}
-      - CJOC_URL=http://${CJOC_URL}
+      - CJOC_URL=https://${CJOC_URL}
       - CJOC_CASC_DEFAULT_BUNDLE=${CJOC_CASC_DEFAULT_BUNDLE}
       - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - CONTROLLER_BUNDLE_NAME=${CONTROLLER_BUNDLE_NAME}
@@ -31,7 +31,6 @@ services:
     networks:
       demo-network:
         ipv4_address: ${CJOC_IP}
-  # Sidecar bunlde-link.yaml init doesent work yet, oc  hostname can not be resolved?
   init-controller:
     image: curlimages/curl
     extra_hosts:
@@ -110,7 +109,7 @@ services:
       - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - JAVA_OPTS=${CONTROLLER_JAVA_OPTS}
       - JENKINS_OPTS=${CONTROLLER_JENKINS_OPTS}
-      - CONTROLLER_URL=http://${CONTROLLER_URL}
+      - CONTROLLER_URL=https://${CONTROLLER_URL}
     depends_on:
       init-controller:
         condition: service_completed_successfully

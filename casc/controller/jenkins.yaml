@@ -1,6 +1,6 @@
 jenkins:
   authorizationStrategy: "cloudBeesRoleBasedAccessControl"
-  securityRealm: "operationsCenter"
+  #securityRealm: "operationsCenter"
   slaveAgentPort: -1
   clouds:
     - "operationsCenterAgentProvisioningService"
