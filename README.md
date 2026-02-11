@@ -37,7 +37,7 @@ graph TD
     Controller -- "5. Load Casc Bundle from CJOC http://operations-center:8080" --> CJOC
 
     User -- "6. https://cjoc.local" --> HAProxy -- "7. http://operations-center:8080" --> CJOC
-    User -- "6. https://controller.local" --> HAProxy -- "9. http://controller:8080" --> Controller
+    User -- "8. https://controller.local" --> HAProxy -- "9. http://controller:8080" --> Controller
 ```
 
 ## Quickstart
