@@ -2,6 +2,43 @@
 
 This project provides a Docker Compose setup for CloudBees CI (Traditional) using HAProxy as a reverse proxy/load balancer.
 
+## Architecture
+
+The setup includes an HAProxy instance that routes traffic based on the Host header (`cjoc.local` vs `controller.local`) to the respective backend containers.
+
+It also utilizes an **Init-Controller** pattern (simulating a Kubernetes init container/sidecar) to automatically fetch the controller's connection details from Operations Center.
+
+```mermaid
+graph TD
+    User((User / Browser))
+    
+    subgraph "Docker Network (172.47.0.0/24)"
+        HAProxy[("HAProxy
+        (SSL Termination)
+        Port: 443")]
+        
+        CJOC["Operations Center
+        (cjoc.local)"]
+        
+        subgraph "Controller Logic"
+            Init["Init-Controller
+            (curl sidecar)"]
+            Controller["Managed Controller
+            (controller.local)"]
+        end
+        
+        HAProxy -->|Host: cjoc.local| CJOC
+        HAProxy -->|Host: controller.local| Controller
+        
+        Init -- "1. Fetch Bundle Link (HTTP)" --> CJOC
+        Init -- "2. Write bundle-link.yaml" --> Controller
+        Controller -- "3. Connect (JNLP/HTTP)" --> CJOC
+    end
+    
+    User -->|https://cjoc.local| HAProxy
+    User -->|https://controller.local| HAProxy
+```
+
 ## Quickstart
 
 ### Prerequisites
@@ -53,43 +90,6 @@ To make the certificate trusted in your browser:
 ![keychainaccess-trust.png](images/keychainaccess-trust.png)
 
 ---
-
-## Architecture
-
-The setup includes an HAProxy instance that routes traffic based on the Host header (`cjoc.local` vs `controller.local`) to the respective backend containers.
-
-It also utilizes an **Init-Controller** pattern (simulating a Kubernetes init container/sidecar) to automatically fetch the controller's connection details from Operations Center.
-
-```mermaid
-graph TD
-    User((User / Browser))
-    
-    subgraph "Docker Network (172.47.0.0/24)"
-        HAProxy[("HAProxy
-        (SSL Termination)
-        Port: 443")]
-        
-        CJOC["Operations Center
-        (cjoc.local)"]
-        
-        subgraph "Controller Logic"
-            Init["Init-Controller
-            (curl sidecar)"]
-            Controller["Managed Controller
-            (controller.local)"]
-        end
-        
-        HAProxy -->|Host: cjoc.local| CJOC
-        HAProxy -->|Host: controller.local| Controller
-        
-        Init -- "1. Fetch Bundle Link (HTTP)" --> CJOC
-        Init -- "2. Write bundle-link.yaml" --> Controller
-        Controller -- "3. Connect (JNLP/HTTP)" --> CJOC
-    end
-    
-    User -->|https://cjoc.local| HAProxy
-    User -->|https://controller.local| HAProxy
-```
 
 ## Configuration
 
