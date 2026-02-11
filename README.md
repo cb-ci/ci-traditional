@@ -25,10 +25,7 @@ graph TD
         end
         
         Init["init-controller
-        (curl sidecar)"]
-       
-        HAProxy -->|Host: cjoc.local| CJOC
-        HAProxy -->|Host: controller.local| Controller
+        (curl sidecar)"]       
     end    
     
     Init -- "1. Fetch CasC  bundle-link.yaml from CJOC" --> CJOC
