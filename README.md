@@ -28,8 +28,8 @@ graph TD
         (curl sidecar)"]       
     end    
     
-    Init -- "1. Fetch CasC  bundle-link.yaml from CJOC" --> CJOC
-    Init -- "2. Write CasC bundle-link.yaml to Controller" --> Controller
+    Init -- "1. Fetch CasC  bundle-link.yaml from operations-center" --> CJOC
+    Init -- "2. Write CasC bundle-link.yaml to controller" --> Controller
     Controller -- "3a. Connect to CJOC https://cjoc.local" --> HAProxy
     Controller -- "3b. Load Casc Bundle from CJOC http://operations-center:8080" --> CJOC
 
