@@ -15,14 +15,17 @@ services:
       - JENKINS_OPTS=${CJOC_JENKINS_OPTS}
       - CJOC_LOGIN_PW=${CJOC_LOGIN_PW}
       - CJOC_LOGIN_USER=${CJOC_LOGIN_USER}
-      - CJOC_URL=${HTTP_PROTOCOL}://${CJOC_URL}
+      - CJOC_URL=http://${CJOC_URL}
       - CJOC_CASC_DEFAULT_BUNDLE=${CJOC_CASC_DEFAULT_BUNDLE}
+      - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - CONTROLLER_BUNDLE_NAME=${CONTROLLER_BUNDLE_NAME}
     container_name: operations-center
     volumes:
       - ${CJOC_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
       - ${CJOC_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/cjoc
       - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/${CONTROLLER_BUNDLE_NAME}
+      - ./license.crt:${JENKINS_HOME_CONTAINER}/license.crt
+      - ./license.key:${JENKINS_HOME_CONTAINER}/license.key
       - ./ssl/cacerts:/tmp/cacerts
       - ./jenkins_init.groovy.d/init_user.groovy:${JENKINS_HOME_CONTAINER}/init.groovy.d/init_user.groovy
     networks:
@@ -59,6 +62,7 @@ services:
         case "$$HTTP_STATUS" in
             200|201|302)
                 echo "Success: Bundle link downloaded."
+                # Network trick: Replace https://cjoc.local with http://operations-center:8080, required for bundle-link.yaml to work inside the container. external route is https://cjoc.local and can not be resolved inside the container
                 sed -i 's#https://cjoc.local#http://operations-center:8080#g' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 cat ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 ;;
@@ -103,9 +107,10 @@ services:
       timeout: 3s
       retries: 150
     environment:
+      - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - JAVA_OPTS=${CONTROLLER_JAVA_OPTS}
       - JENKINS_OPTS=${CONTROLLER_JENKINS_OPTS}
-      - CONTROLLER_URL=${HTTP_PROTOCOL}://${CONTROLLER_URL}
+      - CONTROLLER_URL=http://${CONTROLLER_URL}
     depends_on:
       init-controller:
         condition: service_completed_successfully
@@ -140,6 +145,33 @@ services:
     extra_hosts:
       - "${CJOC_URL}:${CJOC_IP}"
       - "${CONTROLLER_URL}:${CONTROLLER_IP}"
+  webtop-browser:
+    image: ${DOCKER_IMAGE_BROWSER_BOX}
+    container_name: webtop
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - SUBFOLDER=/ #optional
+      - TITLE=Webtop #optional
+    volumes:
+      - ${BROWSER_PERSISTENCE}:/config
+    ports:
+      - 3000:3000
+      - 3001:3001
+    #devices:
+    #  - /dev/dri:/dev/dri #optional
+    shm_size: "2gb" #optional
+    restart: unless-stopped
+    extra_hosts:
+      - "${CJOC_URL}:${HAPROXY_IP}"
+      - "${CONTROLLER_URL}:${HAPROXY_IP}"
+    networks:
+      demo-network:
+        ipv4_address: ${BROWSER_IP}
+
 networks:
   demo-network:
     driver: bridge

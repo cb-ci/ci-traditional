@@ -3,16 +3,20 @@ removeStrategy:
   items: NONE
 items:
 - kind: clientController
-  name: controller
-  description: 'controller'
-  displayName: controller
+  name: ${CONTROLLER_BUNDLE_NAME}
+  description: ${CONTROLLER_BUNDLE_NAME}
+  displayName: ${CONTROLLER_BUNDLE_NAME}
   properties:
   - configurationAsCode:
-      bundle: controller/controller
+      bundle: local/${CONTROLLER_BUNDLE_NAME}
   - sharedHeaderLabelOptIn:
       optIn: true
   - healthReporting:
       enabled: true
+  - optOutProperty:
+      securityEnforcerOptOutMode:
+        optOutNone: {
+          }
   - owner:
       delay: 5
       owners: ''

@@ -6,6 +6,7 @@ casc/core-casc-export-jenkins-target
 haproxy-config/gen-haproxy-ssl.cfg
 haproxy-config/gen-haproxy.cfg
 ssl/*
-
+license.crt
+license.key
 
 

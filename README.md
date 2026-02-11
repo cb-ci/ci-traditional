@@ -46,7 +46,8 @@ graph TD
 1. **Docker & Docker Compose**: Ensure Docker is installed and running.
 2. **Java**: Required for initial certificate generation (if applicable) or environment checks.
 3. **envsubst**: Required for generating HAProxy configuration from templates (usually part of `gettext` package).
-4. **Host Entries**: Add the following entries to your `/etc/hosts` file to resolve the local domains:
+4. **CloudBees CI Wildcard license files**: Create them or copy them to the current directory (license.crt and license.key)
+5. **Host Entries**: Add the following entries to your `/etc/hosts` file to resolve the local domains:
 
     ```bash
     127.0.0.1 cjoc.local controller.local
