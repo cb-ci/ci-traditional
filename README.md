@@ -33,10 +33,11 @@ graph TD
     
     Init -- "1. Fetch CasC Bundle Link (HTTP)" --> CJOC
     Init -- "2. Write CasC bundle-link.yaml" --> Controller
-    Controller -- "3. Connect to CJOC (HTTPS)" --> HAProxy -- "4. Connect to CJOC http://operations-center:8080" --> CJOC
-    
-    User -- "5. https://cjoc.local" --> HAProxy -- "6. http://operations-center:8080" --> CJOC
-    User -- "7. https://controller.local" --> HAProxy -- "8. http://controller:8080" --> Controller
+    Controller -- "3. Connect to CJOC https://cjoc.local" --> HAProxy -- "4. Connect to CJOC http://operations-center:8080" --> CJOC
+    Controller -- "5. Load Casc Bundle from CJOC http://operations-center:8080" --> CJOC
+
+    User -- "6. https://cjoc.local" --> HAProxy -- "7. http://operations-center:8080" --> CJOC
+    User -- "8. https://controller.local" --> HAProxy -- "9. http://controller:8080" --> Controller
 ```
 
 ## Quickstart
