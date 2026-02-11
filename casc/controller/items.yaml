@@ -3,23 +3,29 @@ removeStrategy:
   items: NONE
 items:
 - kind: pipeline
-  name: helloWorldPipeline
+  name: hw
   concurrentBuild: true
   definition:
     cpsFlowDefinition:
       sandbox: true
       script: |
         pipeline {
-            agent none
-            stages {
-                stage('Hello') {
-                    steps {
-                        echo 'Hello World'
-                    }
-                }
-            }
+          agent none
+
+          stages {
+              stage('Hello') {
+                  steps {
+                      echo 'Hello World'
+                  }
+              }
+          }
         }
-    description: 'helloWorldPipeline'
-    disabled: false
-    displayName: helloWorldPipeline
-    resumeBlocked: false
+  description: ''
+  disabled: false
+  displayName: hw
+  properties:
+    - gitLabConnection:
+        useAlternativeCredential: false
+        jobCredentialId: ''
+        gitLabConnection: gitlab
+  resumeBlocked: false
