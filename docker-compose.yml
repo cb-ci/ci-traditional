@@ -61,7 +61,9 @@ services:
         case "$$HTTP_STATUS" in
             200|201|302)
                 echo "Success: Bundle link downloaded."
-                # Network trick: Replace https://cjoc.local with http://operations-center:8080, required for bundle-link.yaml to work inside the container. external route is https://cjoc.local and can not be resolved inside the container
+                # Network workaround: 
+                # Replacement of https://cjoc.local/zip-bundle/ with http://operations-center:8080/zip-bundle/ required, 
+                # because the external route https://cjoc.local can not be resolved to the IP of haproxy at the time of execution because haproxy is not up an running yet. (see docker-compose dependencies chain)
                 sed -i 's|http.*/zip-bundle/|http://operations-center:8080/zip-bundle/|' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 cat ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 ;;
