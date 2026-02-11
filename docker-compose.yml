@@ -63,7 +63,6 @@ services:
             200|201|302)
                 echo "Success: Bundle link downloaded."
                 # Network trick: Replace https://cjoc.local with http://operations-center:8080, required for bundle-link.yaml to work inside the container. external route is https://cjoc.local and can not be resolved inside the container
-                # sed -i 's#https://cjoc.local#http://operations-center:8080#g' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 sed -i 's|http.*/zip-bundle/|http://operations-center:8080/zip-bundle/|' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 cat ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 ;;

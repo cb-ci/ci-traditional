@@ -1,11 +1,11 @@
 apiVersion: "2"
 id: "cjoc"
-description: "Cjoc bundle descriptor"
+description: "Cjoc bundle 2.528.3.35200"
 version: "1"
 jcasc:
   - "jenkins.yaml"
-# plugins:
-#   - "plugins.yaml"
+plugins:
+  - "plugins.yaml"
 rbac:
   - "rbac.yaml"
 items:

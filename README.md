@@ -1,6 +1,7 @@
 # CloudBees CI Traditional with HAProxy (SSL Termination)
 
 This project provides a Docker Compose setup for CloudBees CI (Traditional) using HAProxy as a reverse proxy/load balancer.
+The setup was tested with CloudBees CI version 2.528.3.35200
 
 ## Architecture
 

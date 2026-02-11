@@ -10,3 +10,7 @@ plugins:
 - id: github
 - id: github-api
 - id: github-branch-source
+- id: operations-center-agent
+- id: operations-center-client
+- id: operations-center-cloud
+- id: operations-center-context

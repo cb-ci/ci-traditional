@@ -1,5 +1,7 @@
 jenkins:
   authorizationStrategy: "cloudBeesRoleBasedAccessControl"
+  securityRealm: "operationsCenter"
+  slaveAgentPort: -1
   clouds:
     - "operationsCenterAgentProvisioningService"
   crumbIssuer:
