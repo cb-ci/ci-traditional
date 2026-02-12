@@ -15,7 +15,7 @@ services:
       - JENKINS_OPTS=${CJOC_JENKINS_OPTS}
       - CJOC_LOGIN_PW=${CJOC_LOGIN_PW}
       - CJOC_LOGIN_USER=${CJOC_LOGIN_USER}
-      - CJOC_URL=https://${CJOC_URL}
+      - CJOC_URL=${HA_PROXY_BIND_PORT}://${CJOC_URL}
       - CJOC_CASC_DEFAULT_BUNDLE=${CJOC_CASC_DEFAULT_BUNDLE}
       - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - CONTROLLER_BUNDLE_NAME=${CONTROLLER_BUNDLE_NAME}
@@ -104,14 +104,14 @@ services:
     #     condition: service_healthy  
     healthcheck:
       test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
-      interval: 3s
+      interval: 5s
       timeout: 3s
-      retries: 150
+      retries: 200
     environment:
       - CASC_BUNDLE_PATH_CONTAINER=${CASC_BUNDLE_PATH_CONTAINER}
       - JAVA_OPTS=${CONTROLLER_JAVA_OPTS}
       - JENKINS_OPTS=${CONTROLLER_JENKINS_OPTS}
-      - CONTROLLER_URL=https://${CONTROLLER_URL}
+      - CONTROLLER_URL=${HA_PROXY_BIND_PORT}://${CONTROLLER_URL}
     depends_on:
       init-controller:
         condition: service_completed_successfully
