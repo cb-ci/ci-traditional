@@ -11,6 +11,7 @@ See also:
 * <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/>
 * <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/>
 * <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/>
+* <https://github.com/cb-ci/ci-traditional-ha/tree/main/ssl>
 
 ## Architecture
 
@@ -161,6 +162,22 @@ To make the certificate trusted in your browser:
 **Bundlelink**
 ![bundle-link.png](images/bundle-link.png)
 
+## Scripts and Resources Overview
+
+| Resource | Description | URL / Path |
+| :--- | :--- | :--- |
+| [up.sh](up.sh) | Main startup script: checks prerequisites, generates certs, configures HAProxy, and starts containers. | [up.sh](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/up.sh) |
+| [down.sh](down.sh) | Stops and removes all Docker containers. | [down.sh](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/down.sh) |
+| [deleteVolumes.sh](deleteVolumes.sh) | Destructive script: stops containers and deletes all local data volumes and SSL certificates. | [deleteVolumes.sh](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/deleteVolumes.sh) |
+| [generate-ssl-cert.sh](generate-ssl-cert.sh) | Generates self-signed SSL certificates and Java truststores for the internal network. | [generate-ssl-cert.sh](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/generate-ssl-cert.sh) |
+| [docker-compose.yml](docker-compose.yml) | Definition of the Docker network and services (CJOC, Controller, HAProxy, Webtop). | [docker-compose.yml](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/docker-compose.yml) |
+| [casc/](casc/) | Configuration as Code bundles for Operations Center and Managed Controllers. | [casc/](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/casc) |
+| [haproxy-config/](haproxy-config/) | HAProxy configuration templates (used with `envsubst`). | [haproxy-config/](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/haproxy-config) |
+| [jenkins_init.groovy.d/](jenkins_init.groovy.d/) | Groovy scripts for initial Jenkins setup (e.g., user creation). | [jenkins_init.groovy.d/](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/jenkins_init.groovy.d) |
+| [.env](.env) | Environment variables for the Docker Compose environment. | [.env](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/.env) |
+| [ssl/](ssl/) | Directory containing generated certificates and keys. | [ssl/](file:///Users/acaternberg/projects/cloudbees-ci/ci-traditional/ssl) |
+| `license.crt` / `.key` | CloudBees CI license files (required for startup). | - |
+
 ---
 
 ## Troubleshooting
@@ -185,6 +202,7 @@ To make the certificate trusted in your browser:
     ```
 
 * **SSL Certificates**: If you encounter SSL issues, remove the `ssl/` directory content and restart to regenerate:
+See also <https://github.com/cb-ci/ci-traditional-ha/tree/main/ssl>
 
     ```bash
     rm -rf ssl/*
