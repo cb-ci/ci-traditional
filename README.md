@@ -145,6 +145,16 @@ create a table with the following columns:
     ./up.sh
     ```
 
+* **Curl commands to test connectivity**:
+
+    ```bash
+    # health&probe=readininess
+    curl -k -L -I https://cjoc.local/health
+    curl -k -L -I https://controller.local/health
+    curl -I -L http://operations-center:8080/health
+    curl -I -L http://controller:8080/health
+    ```
+
 ### Webtop (Browser-based Desktop)
 
 The environment includes a **Webtop** container, which provides a full Linux desktop environment in your browser.

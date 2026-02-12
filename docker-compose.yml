@@ -9,7 +9,7 @@ services:
       test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 3s
       timeout: 3s
-      retries: 50
+      retries: 150
     environment:
       - JAVA_OPTS=${CJOC_JAVA_OPTS}
       - JENKINS_OPTS=${CJOC_JENKINS_OPTS}
