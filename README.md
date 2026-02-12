@@ -10,6 +10,7 @@ See also:
 * <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/add-bundle>
 * <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/>
 * <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/>
+* <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/>
 
 ## Architecture
 
