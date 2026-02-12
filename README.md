@@ -5,8 +5,11 @@ The setup was tested with CloudBees CI version 2.528.3.35200
 
 See also:
 
+- <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/distribute-casc-bundles-from-oc>
 - <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller>
 - <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/add-bundle>
+<https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/>
+<https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/>
 
 ## Architecture
 
@@ -68,8 +71,8 @@ Run the main startup script:
 This script will:
 
 - Check for Java.
-- Generate SSL certificates if missing.
-- Generate HAProxy configuration using `envsubst` and variables from `.env`.
+- Generate SSL certificates if missing. see [generate-ssl-cert.sh](generate-ssl-cert.sh)
+- Generate HAProxy configuration using `envsubst` and variables from `.env`. see [haproxy-config/haproxy-ssl.cfg](haproxy-config/haproxy-ssl.cfg)
 - Start the Docker containers (`haproxy`, `operations-center`, `controller`, and `init-controller`).
 
 ### Accessing the Application
@@ -105,6 +108,14 @@ To make the certificate trusted in your browser:
 ![bundle-link.png](images/bundle-link.png)
 
 ---
+
+## Resources
+
+create a table with the following columns:
+
+- Resource
+- Description
+- URL
 
 ## Troubleshooting
 
