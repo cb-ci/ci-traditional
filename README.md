@@ -46,6 +46,59 @@ graph TD
     User -- "5. https://controller.local" --> HAProxy -- "http://controller:8080" --> Controller
 ```
 
+### Startup Sequence Diagram
+
+The following sequence diagram illustrates the automated startup flow provided by `up.sh` and the `docker-compose` dependency chain.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    
+    actor User
+    participant Script as ./up.sh
+    participant Docker as Docker Engine
+    participant CJOC as operations-center
+    participant Init as init-controller
+    participant Controller as controller
+    participant HAProxy as haproxy
+
+    User->>Script: Run ./up.sh
+    
+    rect rgb(240, 248, 255)
+        Note right of Script: Pre-flight Checks
+        Script->>Script: Verify JAVA_HOME
+        Script->>Script: Verify License Files
+        Script->>Script: Generate/Check SSL Certs
+        Script->>Script: envsubst haproxy.cfg template
+    end
+
+    Script->>Docker: docker-compose up -d --build
+    
+    par Start Core Services
+        Docker->>CJOC: Start Container
+        Note right of CJOC: Healthcheck: Wait for /whoAmI
+        Docker->>Init: Start Container (depends_on CJOC healthy)
+    end
+    
+    rect rgb(255, 250, 240)
+        Note left of Init: Initialization Phase
+        Init->>CJOC: Fetch Bundle Link (curl)
+        CJOC-->>Init: Return 200 OK + YAML
+        Init->>Init: Write bundle-link.yaml
+        Init-->>Docker: Exit 0 (Success)
+    end
+
+    Docker->>Controller: Start Container (depends_on Init completed)
+    Controller->>Controller: Read bundle-link.yaml
+    Controller->>CJOC: Connect (JNLP/Remoting)
+    
+    Docker->>HAProxy: Start Container (depends_on Controller healthy)
+    Note right of HAProxy: Routes traffic to CJOC & Controller
+
+    User->>HAProxy: Access https://cjoc.local
+    User->>HAProxy: Access https://controller.local
+```
+
 ## Quickstart
 
 ### Prerequisites
