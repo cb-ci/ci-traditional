@@ -11,8 +11,8 @@ KEY_FILE="server.key"
 STORE_PW="changeit"
 
 # Ensure variables are set or have defaults for the -subj flag
-CJOC_URL=${CJOC_URL:-"localhost"}
-CONTROLLER_URL=${CONTROLLER_URL:-"controller.local"}
+CJOC_HOST=${CJOC_HOST:-"localhost"}
+CONTROLELR_HOST=${CONTROLELR_HOST:-"controller.local"}
 CONTROLLER_IP=${CONTROLLER_IP:-"127.0.0.1"}
 CJOC_IP=${CJOC_IP:-"127.0.0.1"}
 
@@ -39,8 +39,8 @@ echo "Generating self-signed SSL certificate..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout "${KEY_FILE}" \
     -out "${CERT_FILE}" \
-    -subj "/C=US/ST=State/L=City/O=Organization/OU=DevOps/CN=${CJOC_URL}" \
-    -addext "subjectAltName=DNS.1:${CJOC_URL},DNS.2:${CONTROLLER_URL},DNS.3:localhost,IP:127.0.0.1,IP:${CONTROLLER_IP},IP:${CJOC_IP}"
+    -subj "/C=US/ST=State/L=City/O=Organization/OU=DevOps/CN=${CJOC_HOST}" \
+    -addext "subjectAltName=DNS.1:${CJOC_HOST},DNS.2:${CONTROLELR_HOST},DNS.3:localhost,IP:127.0.0.1,IP:${CONTROLLER_IP},IP:${CJOC_IP}"
 
 chmod 600 "${KEY_FILE}"
 chmod 644 "${CERT_FILE}"

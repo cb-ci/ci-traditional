@@ -163,14 +163,6 @@ To make the certificate trusted in your browser:
 
 ---
 
-## Resources
-
-create a table with the following columns:
-
-* Resource
-* Description
-* URL
-
 ## Troubleshooting
 
 * **Check Logs**:
