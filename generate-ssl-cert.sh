@@ -48,26 +48,11 @@ chmod 644 "${CERT_FILE}"
 # Copy cacerts
 cp -f $JAVA_HOME/lib/security/cacerts .
 
-# 2. Automated Keytool: Using -dname and -noprompt
-# We provide the Distinguished Name (dname) so it doesn't ask for your name/org
-echo "Creating Java KeyStore..."
-keytool -delete -alias jenkins -keystore jenkins.jks -storepass "$STORE_PW" -noprompt || true
-
-keytool -genkey -alias jenkins -keystore jenkins.jks \
-    -keyalg rsa -storepass "$STORE_PW" -keypass "$STORE_PW" \
-    -dname "CN=jenkins, OU=DevOps, O=Organization, L=City, S=State, C=US" \
-    -noprompt
-
 
 # 3. PKCS12 Conversion: Passwords handled via -passout and -passin
 openssl pkcs12 -export -in "${CERT_FILE}" -inkey "${KEY_FILE}" \
     -out jenkins.p12 -name jenkins -CAfile "${CERT_FILE}" -caname root \
     -passout pass:"$STORE_PW"
-
-# 4. Import Keystore: Added -srcstorepass to prevent password prompt
-keytool -importkeystore -destkeystore jenkins.jks -srckeystore jenkins.p12 \
-    -srcstoretype PKCS12 -storepass "$STORE_PW" -keypass "$STORE_PW" \
-    -srcstorepass "$STORE_PW" -alias jenkins -noprompt
 
 cat "${CERT_FILE}" "${KEY_FILE}" > jenkins.pem
 
