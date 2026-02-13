@@ -1,9 +1,9 @@
 # CloudBees CI Traditional with HAProxy (SSL Termination)
 
 This repository provides a demo Docker Compose environment for [CloudBees CI Traditional](https://docs.cloudbees.com/docs/cloudbees-ci/latest/traditional-install-guide).
-It utilise [Configuration as Code (CasC)](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-commons/casc-landing-page) to and starts the full stack with one command `./up.sh`, including:
+It utilise [Configuration as Code (CasC)](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-commons/casc-landing-page) to configure the CloudBees CI stack and starts the full stack with one command `./up.sh`, including:
 
-- Operations Center
+- Operations Center (CJOC)
 - One connected Controller
 - Reverse Proxy (HAProxy) with SSL Endpoint termination.
 
