@@ -24,25 +24,24 @@ It also utilizes an **Init-Controller** pattern (simulating a Kubernetes init co
 graph TD
     User((User / Browser))
     subgraph "Docker Compose Network"
-        HAProxy[("(4) haproxy
+        HAProxy[("haproxy
         (SSL Termination)
         Port: 443")]
         
         subgraph "CloudBees CI"
-            CJOC["(1) operations-center
+            CJOC["operations-center
             (cjoc.local)"]
-            Controller["(3) controller
+            Controller["controller
             (controller.local)"]
         end
         
-        Init["(2) init-controller
+        Init["init-controller
         (curl sidecar)"]       
     end    
     
     Init -- "1. Fetch CasC  bundle-link.yaml from operations-center" --> CJOC
     Init -- "2. Write CasC bundle-link.yaml to controller volume" --> Controller
-    Controller -- "3. Connect to operations-center https://cjoc.local" --> HAProxy
-    Controller -- "4. Load Casc Bundle from operations-center" --> HAProxy
+    Controller -- "3. Connect to operations-center/Load Casc Bundle https://cjoc.local" --> HAProxy
 
     User -- "4. https://cjoc.local" --> HAProxy -- "http://operations-center:8080" --> CJOC
     User -- "5. https://controller.local" --> HAProxy -- "http://controller:8080" --> Controller
