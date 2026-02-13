@@ -30,7 +30,6 @@ fi
 
 echo "=== SSL Certificate Generation Script (Automated) ==="
 
-# 1. Automatic Regeneration: No more read -p prompt
 if [[ -f "${CERT_FILE}" && -f "${KEY_FILE}" ]]; then
     echo "✓ SSL certificates exist. Overwriting for automation..."
 fi
@@ -51,7 +50,7 @@ cp -f $JAVA_HOME/lib/security/cacerts .
 # ${KEY_FILE} should not be required in cacert truststore (just the public key is required), but it doesn't hurt to have it for the demo
 cat "${CERT_FILE}" "${KEY_FILE}" > jenkins.pem
 
-# 5. Final Import: -noprompt ensures it doesn't ask "Trust this certificate?"
+# Final Import: -noprompt ensures it doesn't ask "Trust this certificate?"
 keytool -import -noprompt -keystore cacerts -file jenkins.pem \
     -storepass "$STORE_PW" -alias jenkins
 

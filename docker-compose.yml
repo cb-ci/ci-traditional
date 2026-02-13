@@ -4,7 +4,7 @@ services:
     platform: linux/amd64
     extra_hosts:
       - "${CJOC_HOST}:${HAPROXY_IP}"
-      - "${CONTROLELR_HOST}:${HAPROXY_IP}"
+      - "${CONTROLLER_HOST}:${HAPROXY_IP}"
     healthcheck:
       test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 3s
@@ -99,7 +99,7 @@ services:
     platform: linux/amd64
     extra_hosts:
       - "${CJOC_HOST}:${HAPROXY_IP}"
-      - "${CONTROLELR_HOST}:${HAPROXY_IP}"
+      - "${CONTROLLER_HOST}:${HAPROXY_IP}"
     healthcheck:
       test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 5s
@@ -143,7 +143,7 @@ services:
         condition: service_healthy
     extra_hosts:
       - "${CJOC_HOST}:${CJOC_IP}"
-      - "${CONTROLELR_HOST}:${CONTROLLER_IP}"
+      - "${CONTROLLER_HOST}:${CONTROLLER_IP}"
   webtop-browser:
     image: ${DOCKER_IMAGE_BROWSER_BOX}
     container_name: webtop
@@ -166,7 +166,7 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "${CJOC_HOST}:${HAPROXY_IP}"
-      - "${CONTROLELR_HOST}:${HAPROXY_IP}"
+      - "${CONTROLLER_HOST}:${HAPROXY_IP}"
     networks:
       demo-network:
         ipv4_address: ${BROWSER_IP}
@@ -174,8 +174,6 @@ services:
 networks:
   demo-network:
     driver: bridge
-    #driver_opts:
-    #  com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
     ipam:
       config:
         - subnet: ${IP_PREFIX}.0.0/24
