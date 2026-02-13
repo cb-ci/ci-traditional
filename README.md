@@ -24,18 +24,18 @@ It also utilizes an **Init-Controller** pattern (simulating a Kubernetes init co
 graph TD
     User((User / Browser))
     subgraph "Docker Compose Network"
-        HAProxy[("haproxy
+        HAProxy[("(4) haproxy
         (SSL Termination)
         Port: 443")]
         
         subgraph "CloudBees CI"
-            CJOC["operations-center
+            CJOC["(1) operations-center
             (cjoc.local)"]
-            Controller["controller
+            Controller["(2) controller
             (controller.local)"]
         end
         
-        Init["init-controller
+        Init["(3) init-controller
         (curl sidecar)"]       
     end    
     
