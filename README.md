@@ -2,7 +2,7 @@
 
 This repository provides a demo Docker Compose environment for CloudBees CI (Traditional).
 It features a pre-configured HAProxy load balancer and leverages Configuration as Code (CasC) for automated lifecycle management.
-Its starts the full stack, including Operations center, one Controller and HAProxy with SSL Endpoint termination.
+It starts the full stack with one command, including the Operations Center, one Controller and HAProxy with SSL Endpoint termination.
 
 ## Key Features
 
