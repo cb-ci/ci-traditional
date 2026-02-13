@@ -48,8 +48,10 @@ services:
         TOKEN="$$(cat ${SECRET_PATH_CJOC_TOKEN})"
         echo "Fetching bundle link..."
 
-        # Capture HTTP status code, allow 4xx/5xx to pass curl so we can check code
-        # -s: Silent (no progress), -S: Show error (connection errors), -k: Insecure, -w: Output status code, -L: Follow redirects
+        # Download bundle link from operationscenter
+        ## Capture HTTP status code, allow 4xx/5xx to pass curl so we can check code
+        ### Network workaround: we need to download from operationscenter:8080 directly because HAProxy is not up and running yet in this compose stage.
+        ### -s: Silent (no progress), -S: Show error (connection errors), -k: Insecure, -w: Output status code, -L: Follow redirects
         HTTP_STATUS=$$(curl -sSL -k -w "%{http_code}" \
             --user "${CJOC_LOGIN_USER}:$${TOKEN}" \
             -o "${JENKINS_HOME_CONTAINER}/bundle-link.yaml" \
@@ -61,8 +63,7 @@ services:
         case "$$HTTP_STATUS" in
             200|201|302)
                 echo "Success: Bundle link downloaded."
-                # Network workaround: 
-                # Replacement of https://cjoc.local/zip-bundle/ with http://operations-center:8080/zip-bundle/ required, 
+                # Network workaround: Replacement of https://cjoc.local/zip-bundle/ with http://operations-center:8080/zip-bundle/ required, 
                 # because the external route https://cjoc.local can not be resolved to the IP of haproxy at the time of execution because haproxy is not up an running yet. (see docker-compose dependencies chain)
                 sed -i 's|http.*/zip-bundle/|http://operations-center:8080/zip-bundle/|' ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
                 cat ${JENKINS_HOME_CONTAINER}/bundle-link.yaml
@@ -99,9 +100,6 @@ services:
     extra_hosts:
       - "${CJOC_HOST}:${HAPROXY_IP}"
       - "${CONTROLELR_HOST}:${HAPROXY_IP}"
-    # depends_on:
-    #   init-controller:
-    #     condition: service_healthy  
     healthcheck:
       test: curl -k --fail http://localhost:${HTTP_PORT}/whoAmI/api/json?tree=authenticated || exit 1
       interval: 5s
