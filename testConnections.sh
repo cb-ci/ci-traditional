@@ -4,7 +4,6 @@ set -x
 source .env
 
 TOKEN=$(cat data/jenkins-home-oc/cjoc_token.txt)
-TOKEN=111ad2241f50c24287475c83f3ee24c8c0
 export TOKEN="${CJOC_LOGIN_USER}:${TOKEN}"
 CJOC_URL="https://${CJOC_HOST}"
 curl -u $TOKEN -I -N \
