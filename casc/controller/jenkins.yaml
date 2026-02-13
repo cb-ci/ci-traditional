@@ -1,6 +1,6 @@
 jenkins:
   authorizationStrategy: "cloudBeesRoleBasedAccessControl"
-  #securityRealm: "operationsCenter"
+  securityRealm: "operationsCenter"
   slaveAgentPort: -1
   clouds:
     - "operationsCenterAgentProvisioningService"
@@ -9,8 +9,31 @@ jenkins:
       excludeClientIPFromCrumb: true
   numExecutors: 1
 security:
+  anonymizeSupportBundle:
+    enabled: false
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  apiTokenProperty: {
+    }
+  cps:
+    hideSandbox: false
+  crumb: {
+    }
+  gitHooks:
+    allowedOnAgents: false
+    allowedOnController: false
   gitHostKeyVerificationConfiguration:
-    sshHostKeyVerificationStrategy: "noHostKeyVerificationStrategy"
+    sshHostKeyVerificationStrategy: "knownHostsFileVerificationStrategy"
+  operationsCenterSecurityInfo: {
+    }
+  prism: {
+    }
+  queueItemAuthenticator: {
+    }
+  scriptApproval:
+    forceSandbox: false
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:

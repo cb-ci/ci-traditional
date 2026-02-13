@@ -33,3 +33,12 @@ docker-compose  up -d --build
 #open https://controller.local
 
 #docker-compose logs -f 
+
+# TOKEN=$(cat data/jenkins-home-oc/cjoc_token.txt)
+# export TOKEN="${CJOC_LOGIN_USER}:${TOKEN}"
+# echo $TOKEN
+# BASE=administrativeMonitor/hudson.diagnosis.ReverseProxySetupMonitor
+# curl -u "$TOKEN" -iL -X POST "https://${CJOC_HOST}/jenkins/${BASE}/test"
+
+
+# curl -u "$TOKEN" -v https://${CJOC_HOST}/ 2>&1 | grep -E '< (Location|Set-Cookie|X-)'

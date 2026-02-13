@@ -1,6 +1,6 @@
 # CloudBees CI Traditional with HAProxy (SSL Termination)
 
-This repository provides a demo Docker Compose environment for CloudBees CI (Traditional).
+This repository provides a demo Docker Compose environment for [CloudBees CI Traditional](https://docs.cloudbees.com/docs/cloudbees-ci/latest/traditional-install-guide).
 It features a pre-configured HAProxy load balancer and leverages Configuration as Code (CasC) for automated lifecycle management.
 It starts the full stack with one command, including the Operations Center, one Controller and HAProxy with SSL Endpoint termination.
 The setup was tested with CloudBees CI version 2.528.3.35200.

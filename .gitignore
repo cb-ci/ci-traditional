@@ -1,6 +1,8 @@
 .idea/
 data
-casc/controller-pf/*
+casc/controller-pf-fixed/*
+casc/controller-dev1/*
+casc/controller-dev*
 casc/core-casc-export-jenkins-source
 casc/core-casc-export-jenkins-target
 haproxy-config/gen-haproxy-ssl.cfg
