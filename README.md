@@ -120,7 +120,7 @@ sequenceDiagram
 Run the main startup script:
 
 ```bash
-# Ensure your .env file is configured (see Configuration section)
+chmod +x *.sh
 ./up.sh
 ```
 
@@ -133,7 +133,9 @@ This script will:
 
 ### Accessing the Application
 
-- **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local) (see [./.env](./.env) for login details $CJOC_ADMIN_USER and $CJOC_ADMIN_PASSWORD)
+See [./.env](./.env) for login details $CJOC_ADMIN_USER and $CJOC_ADMIN_PASSWORD
+
+- **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local)
 - **Managed Controller:** [https://controller.local](https://controller.local)
 
 *(Accept the self-signed certificate warnings in your browser)*
