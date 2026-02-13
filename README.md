@@ -31,11 +31,11 @@ graph TD
         subgraph "CloudBees CI"
             CJOC["(1) operations-center
             (cjoc.local)"]
-            Controller["(2) controller
+            Controller["(3) controller
             (controller.local)"]
         end
         
-        Init["(3) init-controller
+        Init["(2) init-controller
         (curl sidecar)"]       
     end    
     
