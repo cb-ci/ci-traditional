@@ -92,7 +92,7 @@ sequenceDiagram
 
     Docker->>Controller: Start Container (depends_on Init completed)
     Controller->>Controller: Read bundle-link.yaml
-    Controller->>CJOC: Connect (JNLP/Remoting)
+    Controller->>CJOC: Connect (Websocket/Remoting)
     
     Docker->>HAProxy: Start Container (depends_on Controller healthy)
     Note right of HAProxy: Routes traffic to CJOC & Controller
