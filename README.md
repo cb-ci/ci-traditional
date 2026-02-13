@@ -43,8 +43,8 @@ graph TD
     Init -- "2. Write CasC bundle-link.yaml to controller volume" --> Controller
     Controller -- "3. Connect to operations-center/Load Casc Bundle https://cjoc.local" --> HAProxy
 
-    User -- "4. https://cjoc.local" --> HAProxy -- "http://operations-center:8080" --> CJOC
-    User -- "5. https://controller.local" --> HAProxy -- "http://controller:8080" --> Controller
+    User -- "4. https://cjoc.local" --> HAProxy -- "4. http://operations-center:8080" --> CJOC
+    User -- "5. https://controller.local" --> HAProxy -- "5. http://controller:8080" --> Controller
 ```
 
 ### Startup Sequence Diagram
