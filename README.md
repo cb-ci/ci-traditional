@@ -133,7 +133,7 @@ This script will:
 
 ### Accessing the Application
 
-- **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local)
+- **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local) (see [./.env](./.env) for login details $CJOC_ADMIN_USER and $CJOC_ADMIN_PASSWORD)
 - **Managed Controller:** [https://controller.local](https://controller.local)
 
 *(Accept the self-signed certificate warnings in your browser)*
