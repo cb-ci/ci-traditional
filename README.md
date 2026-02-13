@@ -1,17 +1,14 @@
 # CloudBees CI Traditional with HAProxy (SSL Termination)
 
-This project provides a Docker Compose setup for CloudBees CI (Traditional) using HAProxy as a reverse proxy/load balancer.
-The setup was tested with CloudBees CI version 2.528.3.35200
+This repository provides a demo Docker Compose environment for CloudBees CI (Traditional).
+It features a pre-configured HAProxy load balancer and leverages Configuration as Code (CasC) for automated lifecycle management.
+Its starts the full stack, including Operations center, one Controller and HAProxy with SSL Endpoint termination.
 
-See also:
+## Key Features
 
-* <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/distribute-casc-bundles-from-oc>
-* <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller>
-* <https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/add-bundle>
-* <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/>
-* <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/>
-* <https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/>
-* <https://github.com/cb-ci/ci-traditional-ha/tree/main/ssl>
+- High Availability Ready: Uses HAProxy as a reverse proxy/load balancer. [Reverse Proxy Configuration with HAProxy](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/)
+- Configurations as Code: Fully manages the CloudBees Operations Center and Controllers using CasC. [Configuration as Code](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller)
+- Version Controlled: Tested and verified with CloudBees CI version 2.528.3.35200.
 
 ## Architecture
 
@@ -125,15 +122,15 @@ Run the main startup script:
 
 This script will:
 
-* Check for Java.
-* Generate SSL certificates if missing. see [generate-ssl-cert.sh](generate-ssl-cert.sh)
-* Generate HAProxy configuration using `envsubst` and variables from `.env`. see [haproxy-config/haproxy-ssl.cfg](haproxy-config/haproxy-ssl.cfg)
-* Start the Docker containers (`haproxy`, `operations-center`, `controller`, and `init-controller`).
+- Check for Java.
+- Generate SSL certificates if missing. see [generate-ssl-cert.sh](generate-ssl-cert.sh)
+- Generate HAProxy configuration using `envsubst` and variables from `.env`. see [haproxy-config/haproxy-ssl.cfg](haproxy-config/haproxy-ssl.cfg)
+- Start the Docker containers (`haproxy`, `operations-center`, `controller`, and `init-controller`).
 
 ### Accessing the Application
 
-* **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local)
-* **Managed Controller:** [https://controller.local](https://controller.local)
+- **Operations Center (CJOC):** [https://cjoc.local](https://cjoc.local)
+- **Managed Controller:** [https://controller.local](https://controller.local)
 
 *(Accept the self-signed certificate warnings in your browser)*
 
@@ -143,9 +140,9 @@ To accept your local self-signed SSL certifacte in your browser when you access 
 
 To make the certificate trusted in your browser:
 
-* [Add the certificate to your Keychain Access](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac)
-* Import the certificate into MacOs "Keychain Access"
-* Once imported: click the certificate and select  "Always trusted"
+- [Add the certificate to your Keychain Access](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac)
+- Import the certificate into MacOs "Keychain Access"
+- Once imported: click the certificate and select  "Always trusted"
 
 ![keychainaccess.png](images/keychainaccess.png)
 
@@ -180,36 +177,46 @@ To make the certificate trusted in your browser:
 
 ---
 
+## Links
+
+- [CloudBees CasC Distribute Bundles from OC](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/distribute-casc-bundles-from-oc)
+- [CloudBees CasC Set up Client Controller](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller)
+- [CloudBees CasC Add Bundle](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/add-bundle)
+- [Reverse Proxy Configuration with HAProxy](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/)
+- [Reverse Proxy Configuration](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/)
+- [Troubleshooting Reverse Proxy Configuration](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/)
+- [Notes about SSL_Certificates](https://github.com/cb-ci/ci-traditional-ha/blob/main/ssl/README.md#useful-links)
+
 ## Troubleshooting
 
-* **Check Logs**:
+- **Check Logs**:
 
     ```bash
     docker-compose logs -f
     ```
 
-* **Controller Connection Issues**: Check the `init-controller` logs to see if the bundle link was fetched successfully:
+- **Controller Connection Issues**: Check the `init-controller` logs to see if the bundle link was fetched successfully:
 
     ```bash
     docker-compose logs init-controller
     ```
 
-* **Restart Containers**:
+- **Restart Containers**:
 
     ```bash
     ./down.sh
     ./up.sh
     ```
 
-* **SSL Certificates**: If you encounter SSL issues, remove the `ssl/` directory content and restart to regenerate:
-See also <https://github.com/cb-ci/ci-traditional-ha/tree/main/ssl>
+- **SSL Certificates**: If you encounter SSL issues, remove the `ssl/` directory content and restart to regenerate:
+See also [Notes about SSL_Certificates](https://github.com/cb-ci/ci-traditional-ha/blob/main/ssl/README.md#useful-links)
 
     ```bash
     rm -rf ssl/*
     ./up.sh
     ```
 
-* **Curl commands to test connectivity**:
+- **Curl commands to test connectivity**:
 
     ```bash
     # health&probe=readininess
@@ -223,16 +230,16 @@ See also <https://github.com/cb-ci/ci-traditional-ha/tree/main/ssl>
 
 The environment includes a **Webtop** container, which provides a full Linux desktop environment in your browser.
 
-* **URL:** [http://localhost:3000](http://localhost:3000)
-* **User:** `abc` / `abc` (or commonly no password depending on configuration)
+- **URL:** [http://localhost:3000](http://localhost:3000)
+- **User:** `abc` / `abc` (or commonly no password depending on configuration)
 
 **When to use it:**
 
-* **Network Debugging:** Since it runs inside the Docker network, use it to debug connectivity issues between containers (e.g., verifying `cjoc.local` resolves correctly from inside the cluster).
-* **Network Debugging:** Bypassing Haprxy and get direct access to the controller or CJOC from inside the cluster (<http://operations-center:8080>, <http://controller:8080>)
-* **Internal Access Check:** If you cannot access the controller or CJOC from your host machine, try accessing them via Webtop (`firefox https://cjoc.local`) to isolate if the issue is with the container network or your host configuration.
+- **Network Debugging:** Since it runs inside the Docker network, use it to debug connectivity issues between containers (e.g., verifying `cjoc.local` resolves correctly from inside the cluster).
+- **Network Debugging:** Bypassing Haprxy and get direct access to the controller or CJOC from inside the cluster (<http://operations-center:8080>, <http://controller:8080>)
+- **Internal Access Check:** If you cannot access the controller or CJOC from your host machine, try accessing them via Webtop (`firefox https://cjoc.local`) to isolate if the issue is with the container network or your host configuration.
 
 ## Development
 
-* **Modify HAProxy Config**: Edit `haproxy-config/haproxy-ssl.cfg`.
-* **Environment Variables**: Adjust settings in `.env`.
+- **Modify HAProxy Config**: Edit `haproxy-config/haproxy-ssl.cfg`.
+- **Environment Variables**: Adjust settings in `.env`.
