@@ -3,12 +3,12 @@
 This repository provides a demo Docker Compose environment for CloudBees CI (Traditional).
 It features a pre-configured HAProxy load balancer and leverages Configuration as Code (CasC) for automated lifecycle management.
 It starts the full stack with one command, including the Operations Center, one Controller and HAProxy with SSL Endpoint termination.
+The setup was tested with CloudBees CI version 2.528.3.35200.
 
-## Key Features
+See also
 
-- High Availability Ready: Uses HAProxy as a reverse proxy/load balancer. [Reverse Proxy Configuration with HAProxy](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/)
-- Configurations as Code: Fully manages the CloudBees Operations Center and Controllers using CasC. [Configuration as Code](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller)
-- Version Controlled: Tested and verified with CloudBees CI version 2.528.3.35200.
+- [Reverse Proxy Configuration with HAProxy](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-haproxy/)
+- [Configuration as Code](https://docs.cloudbees.com/docs/cloudbees-ci/latest/casc-controller/set-up-client-controller)
 
 ## Architecture
 
