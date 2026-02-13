@@ -47,13 +47,8 @@ chmod 644 "${CERT_FILE}"
 
 # Copy cacerts
 cp -f $JAVA_HOME/lib/security/cacerts .
-
-
-# 3. PKCS12 Conversion: Passwords handled via -passout and -passin
-openssl pkcs12 -export -in "${CERT_FILE}" -inkey "${KEY_FILE}" \
-    -out jenkins.p12 -name jenkins -CAfile "${CERT_FILE}" -caname root \
-    -passout pass:"$STORE_PW"
-
+# Create the pem , ${KEY_FILE} is the private key and ${CERT_FILE} is the public key.
+# ${KEY_FILE} should not be required in cacert truststore (just the public key is required), but it doesn't hurt to have it for the demo
 cat "${CERT_FILE}" "${KEY_FILE}" > jenkins.pem
 
 # 5. Final Import: -noprompt ensures it doesn't ask "Trust this certificate?"
