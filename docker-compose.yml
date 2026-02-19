@@ -24,15 +24,17 @@ services:
       - ${CJOC_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
       - ${CJOC_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/cjoc
       - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}/${CONTROLLER_BUNDLE_NAME}
-      - ./license.crt:${JENKINS_HOME_CONTAINER}/license.crt
-      - ./license.key:${JENKINS_HOME_CONTAINER}/license.key
-      - ./ssl/cacerts:/tmp/cacerts
-      - ./jenkins_init.groovy.d/init_user.groovy:${JENKINS_HOME_CONTAINER}/init.groovy.d/init_user.groovy
+      - ${PWD}/ssl/cacerts:/tmp/cacerts
+      # https://github.com/testcontainers/testcontainers-java/issues/11222
+      # - ${PWD}/license.crt:${JENKINS_HOME_CONTAINER}/license.crt
+      # - ${PWD}/license.key:${JENKINS_HOME_CONTAINER}/license.key
+      # - ${PWD}/jenkins_init.groovy.d/init_user.groovy:${JENKINS_HOME_CONTAINER}/init.groovy.d/init_user.groovy
     networks:
       demo-network:
         ipv4_address: ${CJOC_IP}
   init-controller:
     image: curlimages/curl
+    user: "1000:1000"
     extra_hosts:
       - "${CJOC_HOST}:${HAPROXY_IP}"
     command:
@@ -122,7 +124,7 @@ services:
       - ${CONTROLLER_PERSISTENCE}:${JENKINS_HOME_CONTAINER}
       - ${CONTROLLER_CACHE}:/var/cache
       - ${CONTROLLER_CASC_BUNDLE_PATH_LOCAL}:${CASC_BUNDLE_PATH_CONTAINER}
-      - ./ssl/cacerts:/tmp/cacerts
+      - ${PWD}/ssl/cacerts:/tmp/cacerts
     networks:
       demo-network:
         ipv4_address: ${CONTROLLER_IP}
@@ -131,9 +133,9 @@ services:
     volumes:
       - ${HA_PROXY_CONFIG}:/usr/local/etc/haproxy/haproxy.cfg
       - ${LOCAL_VOLUME}/haproxy:/etc/ssl/
-      - ./ssl/jenkins.pem:/etc/ssl/certs/jenkins.pem
+      - ${PWD}/ssl/jenkins.pem:/etc/ssl/certs/jenkins.pem
     ports:
-      - "${HA_PROXY_BIND_PORT}:${HA_PROXY_BIND_PORT}"
+      - "${HA_PROXY_BIND_PORT}:${HA_PROXY_BIND_PORT}" ## 443 is the internal port!
     container_name: haproxy
     networks:
       demo-network:

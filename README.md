@@ -192,6 +192,10 @@ To make the certificate trusted in your browser:
 - [Troubleshooting Reverse Proxy Configuration](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/)
 - [Notes about SSL_Certificates](https://github.com/cb-ci/ci-traditional-ha/blob/main/ssl/README.md#useful-links)
 
+## Issues
+
+- <https://github.com/testcontainers/testcontainers-java/issues/11222>
+
 ## Troubleshooting
 
 - **Check Logs**:
