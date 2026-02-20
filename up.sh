@@ -27,6 +27,23 @@ fi
 # Create HAProxy config from template
 envsubst < haproxy-config/haproxy-ssl.cfg > "${HA_PROXY_CONFIG}"
 
+# workaround to avoid https://github.com/testcontainers/testcontainers-java/issues/11222
+mkdir -p "${CJOC_PERSISTENCE}"
+cp -f ./license.crt "${CJOC_PERSISTENCE}/license.crt"
+cp -f ./license.key "${CJOC_PERSISTENCE}/license.key"
+chmod 600 "${CJOC_PERSISTENCE}/license.crt" "${CJOC_PERSISTENCE}/license.key"
+echo "Copied license files to ${CJOC_PERSISTENCE}"
+
+mkdir -p "${CJOC_PERSISTENCE}/init.groovy.d"
+cp -f ./jenkins_init.groovy.d/init_user.groovy "${CJOC_PERSISTENCE}/init.groovy.d/init_user.groovy"
+chmod 644 "${CJOC_PERSISTENCE}/init.groovy.d/init_user.groovy"
+echo "Copied init_user.groovy to ${CJOC_PERSISTENCE}/init.groovy.d"
+# sudo chown -R 1000:1000 ${CJOC_PERSISTENCE} ${CONTROLLER_PERSISTENCE} 
+
+# End workaround
+
+
+# Start the services
 docker-compose  up -d --build
 
 #open https://cjoc.local
