@@ -132,7 +132,6 @@ services:
     image: ${DOCKER_IMAGE_HAPROXY}
     volumes:
       - ${HA_PROXY_CONFIG}:/usr/local/etc/haproxy/haproxy.cfg
-      - ${LOCAL_VOLUME}/haproxy:/etc/ssl/
       - ${PWD}/ssl/jenkins.pem:/etc/ssl/certs/jenkins.pem
     ports:
       - "${HA_PROXY_BIND_PORT}:${HA_PROXY_BIND_PORT}" ## 443 is the internal port!
