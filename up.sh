@@ -3,6 +3,15 @@ set -e
 
 source .env
 
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker-compose)
+else
+  echo "Docker Compose not found. Install Docker Compose v2 ('docker compose') or v1 ('docker-compose')."
+  exit 127
+fi
+
 if [[ -z "${JAVA_HOME}" ]]; then
   echo "JAVA_HOME is not set. Set JAVA_HOME first"
   exit 1
@@ -44,12 +53,12 @@ echo "Copied init_user.groovy to ${CJOC_PERSISTENCE}/init.groovy.d"
 
 
 # Start the services
-docker-compose  up -d --build
+"${COMPOSE_CMD[@]}" up -d --build
 
 #open https://cjoc.local
 #open https://controller.local
 
-#docker-compose logs -f 
+#"${COMPOSE_CMD[@]}" logs -f
 
 # TOKEN=$(cat data/jenkins-home-oc/cjoc_token.txt)
 # export TOKEN="${CJOC_LOGIN_USER}:${TOKEN}"
