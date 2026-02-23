@@ -51,6 +51,7 @@ echo "Copied init_user.groovy to ${CJOC_PERSISTENCE}/init.groovy.d"
 
 # End workaround
 
+mkdir -p "${CONTROLLER_PERSISTENCE}"
 
 # Start the services
 "${COMPOSE_CMD[@]}" up -d --build
