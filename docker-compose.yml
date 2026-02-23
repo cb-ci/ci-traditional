@@ -147,6 +147,7 @@ services:
       - "${CONTROLLER_HOST}:${CONTROLLER_IP}"
   webtop-browser:
     image: ${DOCKER_IMAGE_BROWSER_BOX}
+    profiles: ["webtop"]
     container_name: webtop
     security_opt:
       - seccomp:unconfined #optional
