@@ -4,9 +4,6 @@ jenkins:
   slaveAgentPort: -1
   clouds:
     - "operationsCenterAgentProvisioningService"
-  crumbIssuer:
-    standard:
-      excludeClientIPFromCrumb: true
   numExecutors: 1
 security:
   anonymizeSupportBundle:
